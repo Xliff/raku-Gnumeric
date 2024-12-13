@@ -1,0 +1,12 @@
+prefix=Gnumeric::Spreadsheet
+struct-prefix=Gnm
+modules=Panel:Raw::Types
+backups=backup,bitbucket,google-backup,azure-backup,hut
+hfile-prefix=
+lib=panel
+include-directory=/usr/src/gnumeric/src
+exec=p6gtkexec
+subprefixes=
+idir-avail=True
+extension=.h
+build-exclude=Gnumeric::Spreadsheet::Raw::Traps,Panel::Raw::Class
