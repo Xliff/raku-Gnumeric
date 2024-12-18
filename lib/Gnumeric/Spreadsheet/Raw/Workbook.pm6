@@ -60,7 +60,7 @@ sub workbook_foreach_cell_in_range (
   GnmEvalPos    $pos,
   GnmValue      $cell_range,
   CellIterFlags $flags,
-  CellIterFunc  $handler,
+                &handler (GnmCellIter, gpointer --> GnmValue)
   gpointer      $closure
 )
   returns GnmValue
@@ -71,7 +71,7 @@ sub workbook_foreach_cell_in_range (
 sub workbook_foreach_name (
   Workbook $wb,
   gboolean $globals_only,
-  GHFunc   $func,
+           &func (gpointer $key, gpointer $value, gpointer $user_data),
   gpointer $data
 )
   is      native(gnumeric-spreadsheet)
