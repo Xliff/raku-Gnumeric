@@ -1,10 +1,6 @@
 #!/usr/bin/env perl6
 use v6.c;
 
-use lib <scripts .>;
-
-use ScriptConfig;
-
 use LWP::Simple;
 #use Mojo::DOM:from<Perl5>;
 use DOM::Tiny;
@@ -76,7 +72,7 @@ sub MAIN (
 
       %signals{$mn} = ( :$udm, :$mn, :$v, :$s-sig, :$rt ).Hash;
     }
-  } elsif ( my $control-io = %config<include-directory.IO.add($control) ) {
+  } elsif (my $control-io = $control.IO).r {
     say 'Reading from file...';
 
     # If it's a readable file, we have to do things the (James) Hardway
@@ -99,7 +95,7 @@ sub MAIN (
 
     # 2) Read in the .h file for the signal signatures
     my $signature-matches;
-    SIGNATURES: {
+    SIGNATURES: loop {
       my $header = $control-io.absolute.subst('.c', '') ~ '.h';
       die "Could not find header '{ $header }' file for signatures!"
         unless $header.IO.r;
@@ -113,7 +109,7 @@ sub MAIN (
         '(' $<sig>=( <-[\)]>+ ) ')'
       /;
 
-      last SIGNATURES if $signature-matches;
+      last if $signature-matches;
 
       $header = $control-io.absolute.subst('.c', '') ~ '-private.h';
       die "Could not find header '{ $header }' file for signatures!"
@@ -128,6 +124,8 @@ sub MAIN (
         \s*
         '(' $<sig>=( <-[\)]>+ ) ')'
       /;
+
+      last
     }
 
     $signature-matches.gist.say;
