@@ -1,9 +1,9 @@
 prefix=Gnumeric::Spreadsheet
 struct-prefix=Gnm
-modules=Panel:Raw::Types
+modules=Gnumeric::Spreadsheet:::Raw::Types
 backups=backup,bitbucket,google-backup,azure-backup,hut
 hfile-prefix=
-lib=panel
+lib=gnumeric
 include-directory=/usr/src/gnumeric/src
 exec=p6gtkexec
 subprefixes=
