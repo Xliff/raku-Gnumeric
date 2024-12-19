@@ -21,6 +21,8 @@ class Gnumeric::Workbook::Control {
 
   has WorkbookControl $!gwc is implementor;
 
+  has $!gwcs;
+
   submethod BUILD ( :$gnumeric-wb-control ) {
     self.setWorkbookControl($gnumeric-wb-control) if $gnumeric-wb-control
   }
@@ -200,7 +202,7 @@ class Gnumeric::Workbook::Control {
   method undo_redo_push (
     Int()    $is_undo,
     Str()    $text,
-    gpointer $key        = gpointerl
+    gpointer $key        = gpointer
   )
     is also<undo-redo-push>
   {
