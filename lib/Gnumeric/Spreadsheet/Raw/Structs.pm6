@@ -656,20 +656,20 @@ class SheetControlGUIClass is repr<CStruct> is export {
 	has SheetControlClass $!parent_class;
 }
 
+class SheetObjectAnchor is repr<CStruct> is export {
+	has GODrawingAnchor $!base      ;
+	has GnmRange        $!cell_bound;
+	has double          $!offset    ;
+	has GnmSOAnchorMode $!mode      ;
+}
+
 class SheetObject is repr<CStruct> is export {
 	has GObject           $!parent_object;
 	has Sheet             $!sheet        ;
 	has GList             $!realized_list;
 	has SheetObjectAnchor $!anchor       ;
 	has SheetObjectFlags  $!flags        ;
-	has char              $!name         ;
-}
-
-class SheetObjectAnchor is repr<CStruct> is export {
-	has GODrawingAnchor $!base      ;
-	has GnmRange        $!cell_bound;
-	has double          $!offset    ;
-	has GnmSOAnchorMode $!mode      ;
+	has Str               $!name         ;
 }
 
 class SheetObjectView is repr<CStruct> is export {
@@ -1274,4 +1274,3 @@ class weibull_random_tool_t is repr<CStruct> is export {
 	has gnm_float $!a;
 	has gnm_float $!b;
 }
-
