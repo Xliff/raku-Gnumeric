@@ -162,7 +162,7 @@ class Gnumeric::Sheet::Control {
     propReturnObject(
       sc_view($!sc),
       $raw,
-      |Gnumeric::Sheet::Object.getTypePair
+      |Gnumeric::Sheet::View.getTypePair
     );
   }
 
