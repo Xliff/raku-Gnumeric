@@ -261,16 +261,20 @@ sub generateFromFile (
       do gather for .<p>.tail
                         .lc
                         .split(/ <.ws> '|' <.ws> /)
-     {
+      {
         my @perms;
+        my $r = $_;
 
-        #"RW-P: $_";
+        $r ~~ s/ 'writ'» /write/;
+        $r ~~ s:g/<[)(]>//;
 
-        s/ 'writ'» /write/;
+        #say "RW-R: $r ({ $r.ends-with('readwrite') })";
 
-        @perms.push: 'read'           if .ends-with('_read'  | '_readable');
-        @perms.push: 'write'          if .ends-with('_write' | '_writable');
-        @perms.append: |<read write>  if .ends-with('readwrite');
+        @perms.push: 'read'           if $r.ends-with('_read'  | '_readable');
+        @perms.push: 'write'          if $r.ends-with('_write' | '_writable');
+        @perms.append: <read write>   if $r.ends-with('readwrite');
+
+        #say "RW-P: { @perms.gist }";
 
         if +@perms {
           take $_ for @perms;
@@ -309,7 +313,7 @@ sub MAIN (
   $control           is copy,
   :$var              is copy = 'w',
   :$prefix           is copy = "https://developer.gnome.org/gtk3/stable/",
-  :$type-prefix              = %config<struct-prefix> // %config<struct_prefix> // 
+  :$type-prefix              = %config<struct-prefix> // %config<struct_prefix> //
                                %config<type-prefix>   // %config<type_prefix>   // %config<prefix>,
   :$control-name
 ) {
