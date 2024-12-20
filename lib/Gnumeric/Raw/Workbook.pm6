@@ -7,7 +7,7 @@ use GLib::Raw::Structs;
 use Gnome::Office::Raw::Definitions;
 use Gnumeric::Spreadsheet::Raw::Definitions;
 
-unit package Gnumeric::Spreadsheet::Raw::Workbook;
+unit package Gnumeric::Raw::Workbook;
 
 ### /usr/src/gnumeric/src/workbook.h
 

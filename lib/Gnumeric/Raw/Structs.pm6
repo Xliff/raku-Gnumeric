@@ -1,11 +1,23 @@
+use v6.c;
+
+use GLib::Raw::Definitions;
+use GLib::Raw::Structs;
+use Pango::Raw::Definitions;
+use GDK::Raw::Structs;
+use GDK::Raw::Definitions;
+use GTK::Raw::Enums;
+use Gnumeric::Raw::Definitions;
+
+unit package Gnumeric::Raw::Structs;
+
 class ColRowRLEState is repr<CStruct> is export {
 	has int         $.length is rw;
 	has ColRowState $!state ;
 }
 
 class DialogStfResult_t is repr<CStruct> is export {
-	has char              $!encoding    ;
-	has char              $!text        ;
+	has Str              $!encoding    ;
+	has Str              $!text        ;
 	has int               $.rowcount     is rw;
 	has int               $.colcount     is rw;
 	has StfParseOptions_t $!parseoptions;
@@ -25,7 +37,7 @@ class FormatInfo_t is repr<CStruct> is export {
 	has gboolean     $!col_import_array      ;
 	has int          $.col_import_count       is rw;
 	has int          $.col_import_array_len   is rw;
-	has char         $!col_header            ;
+	has Str         $!col_header            ;
 }
 
 class GODataCache is repr<CStruct> is export {
@@ -36,7 +48,7 @@ class GODataCache is repr<CStruct> is export {
 	has int               $.records_len       is rw;
 	has int               $.records_allocated is rw;
 	has guint8            $.records           is rw;
-	has char              $!refreshed_by     ;
+	has Str              $!refreshed_by     ;
 	has GOVal             $!refreshed_on     ;
 	has gboolean          $!refresh_upgrades ;
 	has int               $.XL_created_ver    is rw;
@@ -128,8 +140,8 @@ class GnmCellRef is repr<CStruct> is export {
 	has Sheet $!sheet       ;
 	has int   $.col          is rw;
 	has int   $.row          is rw;
-	has char  $!col_relative;
-	has char  $!row_relative;
+	has Str  $!col_relative;
+	has Str  $!row_relative;
 }
 
 class GnmCellRendererExprEntryClass_ is repr<CStruct> is export {
@@ -178,7 +190,7 @@ class GnmCompleteSheet is repr<CStruct> is export {
 	has GnmCellPos  $!entry       ;
 	has GnmCellPos  $!current     ;
 	has GnmCell     $!cell        ;
-	has char        $!current_text;
+	has Str        $!current_text;
 }
 
 class GnmCompleteSheetClass is repr<CStruct> is export {
@@ -189,7 +201,7 @@ class GnmComplete_ is repr<CStruct> is export {
 	has GObject                  $!parent        ;
 	has GnmCompleteMatchNotifyFn $!notify        ;
 	has void                     $!notify_closure;
-	has char                     $!text          ;
+	has Str                     $!text          ;
 	has guint                    $.idle_tag       is rw;
 }
 
@@ -249,16 +261,16 @@ class GnmExprWalk is repr<CStruct> is export {
 }
 
 class GnmFTCategory is repr<CStruct> is export {
-	has char     $!directory  ;
+	has Str     $!directory  ;
 	has gboolean $!is_writable;
-	has char     $!name       ;
-	has char     $!description;
+	has Str     $!name       ;
+	has Str     $!description;
 }
 
 class GnmFTCategoryGroup is repr<CStruct> is export {
 	has GList $!categories ;
-	has char  $!name       ;
-	has char  $!description;
+	has Str  $!name       ;
+	has Str  $!description;
 }
 
 class GnmFTColRowInfo is repr<CStruct> is export {
@@ -363,8 +375,8 @@ class GnmPaneSlideInfo is repr<CStruct> is export {
 
 class GnmParseError is repr<CStruct> is export {
 	has GError $!err       ;
-	has int    $.begin_char is rw;
-	has int    $.end_char   is rw;
+	has int    $.begin_Str is rw;
+	has int    $.end_Str   is rw;
 }
 
 class GnmParsePos is repr<CStruct> is export {
@@ -394,9 +406,9 @@ class GnmPrintDesiredDisplay is repr<CStruct> is export {
 }
 
 class GnmPrintHF is repr<CStruct> is export {
-	has char $!left_format  ;
-	has char $!middle_format;
-	has char $!right_format ;
+	has Str $!left_format  ;
+	has Str $!middle_format;
+	has Str $!right_format ;
 }
 
 class GnmRange is repr<CStruct> is export {
@@ -427,8 +439,8 @@ class GnmScenarioItem is repr<CStruct> is export {
 class GnmScenario_ is repr<CStruct> is export {
 	has GObject $!parent ;
 	has Sheet   $!sheet  ;
-	has char    $!name   ;
-	has char    $!comment;
+	has Str    $!name   ;
+	has Str    $!comment;
 	has GSList  $!items  ;
 }
 
@@ -440,7 +452,7 @@ class GnmSearchFilterResult is repr<CStruct> is export {
 class GnmSearchReplace is repr<CStruct> is export {
 	has GOSearchReplace           $!base                     ;
 	has GnmSearchReplaceScope     $!scope                    ;
-	has char                      $!range_text               ;
+	has Str                      $!range_text               ;
 	has Sheet                     $!sheet                    ;
 	has gboolean                  $!query                    ;
 	has gboolean                  $!is_number                ;
@@ -462,8 +474,8 @@ class GnmSearchReplace is repr<CStruct> is export {
 
 class GnmSearchReplaceCellResult is repr<CStruct> is export {
 	has GnmCell $!cell    ;
-	has char    $!old_text;
-	has char    $!new_text;
+	has Str    $!old_text;
+	has Str    $!new_text;
 }
 
 class GnmSheetRange is repr<CStruct> is export {
@@ -502,8 +514,8 @@ class GnmSolverFactoryClass is repr<CStruct> is export {
 
 class GnmSolverFactory_ is repr<CStruct> is export {
 	has GObject                    $!parent    ;
-	has char                       $!id        ;
-	has char                       $!name      ;
+	has Str                       $!id        ;
+	has Str                       $!name      ;
 	has GnmSolverModelType         $!type      ;
 	has GnmSolverCreator           $!creator   ;
 	has GnmSolverFactoryFunctional $!functional;
@@ -552,7 +564,7 @@ class GnmSortData is repr<CStruct> is export {
 	has GnmSortClause $!clauses       ;
 	has gboolean      $!top           ;
 	has gboolean      $!retain_formats;
-	has char          $!locale        ;
+	has Str          $!locale        ;
 }
 
 class GnmStyleCond is repr<CStruct> is export {
@@ -634,7 +646,7 @@ class MainInfo_t is repr<CStruct> is export {
 	has GtkCheckButton $!line_break_unix    ;
 	has GtkCheckButton $!line_break_windows ;
 	has GtkCheckButton $!line_break_mac     ;
-	has GOCharmapSel   $!charmap_selector   ;
+	has GOStrmapSel   $!Strmap_selector   ;
 	has RenderData_t   $!renderdata         ;
 }
 
@@ -679,16 +691,16 @@ class SheetObjectView is repr<CStruct> is export {
 
 class SheetPrivate is repr<CStruct> is export {
 	has GnmRange   $!unhidden_region        ;
-	has char       $!enable_showhide_detail ;
-	has char       $!recompute_visibility   ;
-	has char       $!recompute_spans        ;
-	has char       $!recompute_max_col_group;
-	has char       $!recompute_max_row_group;
-	has char       $!resize_scrollbar       ;
-	has char       $!resize                 ;
+	has Str       $!enable_showhide_detail ;
+	has Str       $!recompute_visibility   ;
+	has Str       $!recompute_spans        ;
+	has Str       $!recompute_max_col_group;
+	has Str       $!recompute_max_row_group;
+	has Str       $!resize_scrollbar       ;
+	has Str       $!resize                 ;
 	has GnmCellPos $!reposition_objects     ;
-	has char       $!filters_changed        ;
-	has char       $!objects_changed        ;
+	has Str       $!filters_changed        ;
+	has Str       $!objects_changed        ;
 }
 
 class SheetViewClass is repr<CStruct> is export {
@@ -779,7 +791,7 @@ class analysis_tools_data_frequency_t is repr<CStruct> is export {
 	has gint                          $.n             is rw;
 	has gboolean                      $!percentage   ;
 	has gboolean                      $!exact        ;
-	has chart_freq_t                  $!chart        ;
+	has Strt_freq_t                  $!Strt        ;
 }
 
 class analysis_tools_data_generic_b_t is repr<CStruct> is export {
@@ -812,7 +824,7 @@ class analysis_tools_data_histogram_t is repr<CStruct> is export {
 	has gboolean                      $!percentage   ;
 	has gboolean                      $!cumulative   ;
 	has gboolean                      $!only_numbers ;
-	has chart_t                       $!chart        ;
+	has Strt_t                       $!Strt        ;
 }
 
 class analysis_tools_data_kaplan_meier_t is repr<CStruct> is export {
@@ -821,7 +833,7 @@ class analysis_tools_data_kaplan_meier_t is repr<CStruct> is export {
 	has gboolean                        $!censored      ;
 	has int                             $.censor_mark    is rw;
 	has int                             $.censor_mark_to is rw;
-	has gboolean                        $!chart         ;
+	has gboolean                        $!Strt         ;
 	has gboolean                        $!ticks         ;
 	has gboolean                        $!std_err       ;
 	has gboolean                        $!median        ;
@@ -896,14 +908,14 @@ class analysis_tools_data_ttests_t is repr<CStruct> is export {
 }
 
 class analysis_tools_kaplan_meier_group_t is repr<CStruct> is export {
-	has char  $!name      ;
+	has Str  $!name      ;
 	has guint $.group_from is rw;
 	has guint $.group_to   is rw;
 }
 
 class auto_expr is repr<CStruct> is export {
 	has GnmFunc       $!func              ;
-	has char          $!descr             ;
+	has Str          $!descr             ;
 	has GnmValue      $!value             ;
 	has gboolean      $!use_max_precision ;
 	has GnmDepManaged $!dep               ;
@@ -941,8 +953,8 @@ class comment is repr<CStruct> is export {
 }
 
 class compiled_terminator is repr<CStruct> is export {
-	has guchar $!min;
-	has guchar $!max;
+	has guStr $!min;
+	has guStr $!max;
 }
 
 class cursor is repr<CStruct> is export {
@@ -1050,9 +1062,9 @@ class edit_line is repr<CStruct> is export {
 }
 
 class edit_pos_changed is repr<CStruct> is export {
-	has char $!location;
-	has char $!content ;
-	has char $!style   ;
+	has Str $!location;
+	has Str $!content ;
+	has Str $!style   ;
 }
 
 class exponential_random_tool_t is repr<CStruct> is export {
@@ -1198,7 +1210,7 @@ class rayleigh_tail_random_tool_t is repr<CStruct> is export {
 
 class sep is repr<CStruct> is export {
 	has GSList   $!str       ;
-	has char     $!chr       ;
+	has Str     $!chr       ;
 	has gboolean $!duplicates;
 }
 

@@ -117,14 +117,18 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
     scg_context_menu($!scg, $event, $c, $r);
   }
 
-  method cursor_extend (Int() $n, Int() $jump_to_bound, Int() $horiz) is also<cursor-extend> {
+  method cursor_extend (Int() $n, Int() $jump_to_bound, Int() $horiz)
+    is also<cursor-extend>
+  {
     my gint      $nn     = $n;
     my gboolean ($j, $h) = ($jump_to_bound, $horiz).map( *.so.Int );
 
     scg_cursor_extend($!scg, $nn, $j, $h);
   }
 
-  method cursor_move (Int() $dir, Int() $jump_to_bound, Int() $horiz) is also<cursor-move> {
+  method cursor_move (Int() $dir, Int() $jump_to_bound, Int() $horiz)
+    is also<cursor-move>
+  {
     my gint      $d       =  $dir;
     my gboolean ($j, $h)  = ($jump_to_bound, $horiz)
 
@@ -141,7 +145,9 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
     scg_delete_sheet_if_possible($!scg);
   }
 
-  method drag_data_get (GtkSelectionData() $selection_data) is also<drag-data-get> {
+  method drag_data_get (GtkSelectionData() $selection_data)
+    is also<drag-data-get>
+  {
     scg_drag_data_get($!scg, $selection_data);
   }
 
@@ -541,7 +547,7 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
     propReturnObject(
       scg_wbc($!scg),
       $raw,
-      |Gnumeric::Workbook::Control.getTypePair
+      |::('Gnumeric::Workbook::Control').getTypePair
     );
   }
 
@@ -549,7 +555,7 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
     propReturnObject(
       scg_wbcg($!scg),
       $raw,
-      |Gnumeric::Workbook::Control::GUI.getTypePair
+      |::('Gnumeric::Workbook::Control::GUI').getTypePair
     );
   }
 
