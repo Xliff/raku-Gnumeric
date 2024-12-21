@@ -4,7 +4,9 @@ use NativeCall;
 
 use GLib::Raw::Definitions;
 use GLib::Raw::Structs;
-use Gnumeric::Spreadsheet::Raw::Definitions;
+use Gnumeric::Raw::Definitions;
+use Gnumeric::Raw::Enums;
+use Gnumeric::Raw::Structs;
 
 unit package Gnumeric::Raw::Range;
 
@@ -155,7 +157,7 @@ sub range_init_invalid (GnmRange $r)
   is      export
 { * }
 
-sub range_init_rangeref (GnmRange r, GnmRangeRef $rr)
+sub range_init_rangeref (GnmRange $r, GnmRangeRef $rr)
   returns GnmRange
   is      native(gnumeric)
   is      export
