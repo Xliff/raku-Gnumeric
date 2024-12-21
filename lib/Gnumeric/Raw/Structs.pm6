@@ -10,6 +10,7 @@ use GDK::RGBA;
 use GDK::Raw::Definitions;
 use GTK::Raw::Definitions;
 use GTK::Raw::Enums;
+use GTK::Raw::Structs;
 use Gnumeric::Raw::Definitions;
 use Gnumeric::Raw::Enums;
 use Gnumeric::Raw::Compat;
@@ -695,22 +696,16 @@ class SheetControl is repr<CStruct> is export {
 # 	has Str       $!objects_changed        ;
 # }
 
-class GnmCellRendererExprEntry_ is repr<CStruct> is export {
-	has GnmCellRendererText $!parent;
-	has WBCGtk              $!wbcg  ;
-	has GnmExprEntry        $!entry ;
-}
-
 class GtkGTAfont is repr<CStruct> {
-	GtkToggleAction $.bold;
-	GtkToggleAction $.italic;
-	GtkToggleAction $.underline;
-	GtkToggleAction $.d-underline,
-	GtkToggleAction $.sl-underline;
-	GtkToggleAction $.dl-underline;
-	GtkToggleAction $.superscript
-	GtkToggleAction $.subscript;
-	GtkToggleAction $.strikethrough;
+	has GtkToggleAction $.bold;
+	has GtkToggleAction $.italic;
+	has GtkToggleAction $.underline;
+	has GtkToggleAction $.d-underline,
+	has GtkToggleAction $.sl-underline;
+	has GtkToggleAction $.dl-underline;
+	has GtkToggleAction $.superscript;
+	has GtkToggleAction $.subscript;
+	has GtkToggleAction $.strikethrough;
 }
 
 class GtkGTAlcra is repr<CStruct> {
@@ -798,7 +793,7 @@ class WBCGtk is repr<CStruct> is export {
   has GSList               $.hide_for_fullscreen;
 
   # Edit area (a GtkEntry)
-  has GtkWidget            $.selection_descriptor
+  has GtkWidget            $.selection_descriptor;
 
   # Autosave
   has gboolean             $.autosave_prompt;
@@ -844,8 +839,8 @@ class WBCGtk is repr<CStruct> is export {
   has GOActionComboPixmaps $.valignment;
 
   HAS GtkGTAfont  $.font;
-	HAS GtkGTAlcra  $.h-align
-  HAS GtkGTAtcb   $.v-align
+	HAS GtkGTAlcra  $.h-align;
+  HAS GtkGTAtcb   $.v-align;
   has GtkWidget   $.menu_zone;
 	has GtkWidget   $.toolbar-zone1;
 	has GtkWidget   $.toolbar-zone2;
@@ -861,13 +856,19 @@ class WBCGtk is repr<CStruct> is export {
 
 	method toolbar-zones {
 		[
-			$!toolbar_zone1,
-			$!toolbar_zone2,
-			$!toolbar_zone3,
-			$!toolbar_zone4,
+			$!toolbar-zone1,
+			$!toolbar-zone2,
+			$!toolbar-zone3,
+			$!toolbar-zone4,
 	  ]
   }
 
+}
+
+class GnmCellRendererExprEntry_ is repr<CStruct> is export {
+	has GnmCellRendererText $!parent;
+	has WBCGtk              $!wbcg  ;
+	has GnmExprEntry        $!entry ;
 }
 
 
