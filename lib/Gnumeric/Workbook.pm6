@@ -2,13 +2,13 @@ use v6.c;
 
 use Method::Also;
 
-use Gnumeric::Spreadsheet::Raw::Types;
-use Gnumeric::Spreadsheet::Raw::Workbook;
+use Gnumeric::Raw::Types;
+use Gnumeric::Raw::Workbook;
 
 use GLib::Roles::Object;
 use GLib::Roles::Implementor;
 
-class Gnumeric::Spreadsheet::Workbook::Sheet {
+class Gnumeric::Workbook::Sheet {
   also does Positional;
   also does Associative;
 
@@ -66,12 +66,16 @@ class Gnumeric::Spreadsheet::Workbook::Sheet {
     $.by-name(k);
   }
 
+  method of {
+    self.::Positional::of;
+  }
+
   method count is also<elems> {
     workbook_sheet_count($!w);
   }
 
-  method delete (Sheet() $s) {
-    workbook_sheet_delete($!s);
+  method delete (Sheet() $s) is static {
+    workbook_sheet_delete($s);
   }
 
   method get_free_name (
@@ -102,7 +106,7 @@ class Gnumeric::Spreadsheet::Workbook::Sheet {
   }
 
   multi method reorder (@no) {
-    samewith( GLib::GSList.new(@no, typed => Sheet);
+    samewith( GLib::GSList.new(@no, typed => Sheet) )
   }
   multi method reorder (GSList() $new_order) {
     workbook_sheet_reorder($!w, $new_order);
@@ -113,7 +117,7 @@ class Gnumeric::Spreadsheet::Workbook::Sheet {
 our subset WorkbookSheetStateAncestry is export of Mu
   where WorkbookSheetState | GObject;
 
-class Gnumeric::Spreadsheet::Workbook::Sheet::State {
+class Gnumeric::Workbook::Sheet::State {
   also does GLib::Roles::Object;
 
   has WorkbookSheetState $!wss is implementor;
@@ -121,6 +125,12 @@ class Gnumeric::Spreadsheet::Workbook::Sheet::State {
   submethod BUILD ( :$gnumeric-worksheet ) {
     self.setWorkbookSheetState($gnumeric-worksheet)
       if $gnumeric-worksheet
+  }
+
+  has Workbook $!w is built;
+
+  submethod TWEAK ( :$workbook ) {
+    $!w = $workbook if $workbook
   }
 
   method setWorkbookSheetState (WorkbookSheetStateAncestry $_) {
@@ -155,15 +165,8 @@ class Gnumeric::Spreadsheet::Workbook::Sheet::State {
     $o.ref if $ref;
     $o;
   }
-
-  has Workbook $!w is built;
-
-  submethod TWEAK ( :$workbook ) {
-    $!w = $workbook if $workbook
-  }
-
-  method new ( :$workbook ) {
-    my $gnumeric-sheet-state = workbook_sheet_state_new();
+  multi method new ( :$workbook ) {
+    my $gnumeric-sheet-state = workbook_sheet_state_new($workbook);
 
     $gnumeric-sheet-state
       ?? self.bless( :$gnumeric-sheet-state, :$workbook )
@@ -180,7 +183,7 @@ class Gnumeric::Spreadsheet::Workbook::Sheet::State {
     unstable_get_type( self.^name, &workbook_sheet_state_get_type, $n, $t );
   }
 
-  method restore (
+  method restore {
     workbook_sheet_state_restore($!w, $!wss);
   }
 
@@ -193,9 +196,7 @@ class Gnumeric::Spreadsheet::Workbook::Sheet::State {
   }
 }
 
-stant WS = Gnumeric::Spreadsheet::Workbook::Sheet;
-
-class Gnumeric::Spreadsheet::Workbook::Iteration {
+class Gnumeric::Workbook::Iteration {
   has $!w is built;
 
   method enabled (Int() $enable) {
@@ -215,13 +216,10 @@ class Gnumeric::Spreadsheet::Workbook::Iteration {
   }
 }
 
-constant WI = Gnumeric::Spreadsheet::Workbook::Iteration;
-
-
 our subset WorkbookAncestry is export of Mu
   where Workbook | GObject;
 
-class Gnumeric::Spreadsheet::Workbook {
+class Gnumeric::Workbook {
   also does GLib::Roles::Object;
 
   has Workbook $!w  is implementor;
@@ -264,6 +262,17 @@ class Gnumeric::Spreadsheet::Workbook {
     $o;
   }
 
+  multi method new {
+    my $gnumeric-workbook = workbook_new();
+
+    $gnumeric-workbook ?? self.bless( :$gnumeric-workbook ) !! Nil;
+  }
+
+
+  constant WSS = Gnumeric::Workbook::Sheet::State;
+  constant WS  = Gnumeric::Workbook::Sheet;
+  constant WI  = Gnumeric::Workbook::Iteration;
+
   has WI       $!wi               ;
   has WS       $!ws               ;
   has WSS      $!wss              ;
@@ -283,12 +292,6 @@ class Gnumeric::Spreadsheet::Workbook {
     $!wss;
   }
 
-  method new {
-    my $gnumeric-workbook = workbook_new();
-
-    $gnumeric-workbook ?? self.bless( :$gnumeric-workbook ) !! Nil;
-  }
-
   method new_with_sheets (Int() $count) is also<new-with-sheets> {
     my gint $c = $count;
 
@@ -302,9 +305,7 @@ class Gnumeric::Spreadsheet::Workbook {
   }
 
   # Type: boolean
-  method recalc-mode is rw  is g-property is also<recalc_mode>
-    is also<recalc_mode>
-  {
+  method recalc-mode is rw  is g-property is also<recalc_mode> {
     my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
     Proxy.new(
       FETCH => sub ($) {
@@ -319,9 +320,7 @@ class Gnumeric::Spreadsheet::Workbook {
   }
 
   # Type: boolean
-  method being-loaded is rw  is g-property is also<being_loaded>
-    is also<being_loaded>
-  {
+  method being-loaded is rw  is g-property is also<being_loaded> {
     my $gv = GLib::Value.new( G_TYPE_BOOLEAN );
     Proxy.new(
       FETCH => sub ($) {
@@ -347,7 +346,7 @@ class Gnumeric::Spreadsheet::Workbook {
     self.connect($!w, 'sheet_deleted');
   }
 
-  method cells (Int() $comments, Int() $vis, :$recalc-moderaw = False) {
+  method cells (Int() $comments, Int() $vis, :$recalc-mode, :$raw = False) {
     my gboolean           $c = $comments.so.Int;
     my GnmSheetVisibility $v = $vis;
 
@@ -357,7 +356,7 @@ class Gnumeric::Spreadsheet::Workbook {
       |GLib::Array::Pointer.getTypePair
     );
     return $o if $raw;
-    $o.setTypePair( |Gnumeric::Spreadsheet::Cell.getTypePair );
+    $o.setTypePair( |Gnumeric::Cell.getTypePair );
     $o.setRaw($raw);
     $o
   }
@@ -505,7 +504,7 @@ class Gnumeric::Spreadsheet::Workbook {
       |GLib::Array::Pointer.getTypePair
     );
     return $o if $raw;
-    $o.setTypePair( |Gnumeric::Spreadsheet::Sheet.getTypePair );
+    $o.setTypePair( |Gnumeric::Sheet.getTypePair );
     $o.setRaw($raw);
     $o
   }

@@ -4,11 +4,15 @@ use NativeCall;
 
 use GLib::Raw::Definitions;
 use Pango::Raw::Types;
+use GDK::Raw::Definitions;
 use GTK::Raw::Definitions;
-use Gnumeric::Spreadsheet::Raw::Definitions;
+use GTK::Raw::Enums;
+use GTK::Raw::Structs;
 use Gnumeric::Raw::Definitions;
+use Gnumeric::Raw::Enums;
+use Gnumeric::Raw::Structs;
 
-unit Gnumeric::Raw::Workbook::Control::GTK;
+unit package Gnumeric::Raw::Workbook::Control::GTK;
 
 ### /usr/src/gnumeric/src/wbc-gtk.h
 

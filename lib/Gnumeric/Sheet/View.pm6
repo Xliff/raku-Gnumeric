@@ -1,179 +1,198 @@
 use v6.c;
 
-use Gnumeric::Spreadsheet::Raw::Types;
-use Gnumeric::Spreadsheet::Raw::Workbook::View;
+use NativeCall;
 
-use Gnumeric::Spreadsheet::Sheet;
-use Gnumeric::Spreadsheet::Sheet::View;
-#use GOffice::Doc;
+use Gnumeric::Raw::Types;
+use Gnumeric::Raw::Sheet::View;
 
+use GLib::Roles::Implementor;
 use GLib::Roles::Object;
 
-class Gnumeric::Spreadsheet::Workbook::View {
+class Gnumeric::Sheet::View {
   also does GLib::Roles::Object;
 
-  has WorkbookView $!wv is implementor;
+  has SheetView $!gsv is implementor;
 
-  method new {
-    my $workbook-view = workbook_view_new();
-
-    $workbook-view ?? self.bless( :$workbook-view ) !! Nil;
-  }
-
-  method new_from_input (
-    GsfInput()     $input,
-    Str()          $uri,
-    GOFileOpener() $file_opener,
-    GOIOContext()  $io_context,
-    Str()          $encoding
+  method ant (
+    GList     $ranges
   ) {
-    my $workbook-view = workbook_view_new_from_input(
-      $input,
-      $uri,
-      $file_opener,
-      $io_context,
-      $encoding
-    );
-
-    $workbook-view ?? self.bless( :$workbook-view ) !! Nil;
+    gnm_sheet_view_ant($!gsv, $ranges);
   }
 
-  method new_from_uri (
-    GOFileOpener() $file_opener,
-    GOIOContext()  $io_context,
-    Str()          $encoding
+  method attach_control (
+    SheetControl $sc
   ) {
-    my $workbook-view = workbook_view_new_from_uri(
-      $file_opener,
-      $io_context,
-      $encoding
-    );
-
-    $workbook-view ?? self.bless( :$workbook-view ) !! Nil;
+    gnm_sheet_view_attach_control($!gsv, $sc);
   }
 
-  method attach_control (WorkbookControl() $wbc) {
-    wb_view_attach_control($!wv, $wbc);
+  method cursor_set (
+    GnmCellPos $edit,
+    gint       $base_col,
+    gint       $base_row,
+    gint       $move_col,
+    gint       $move_row,
+    GnmRange   $bound
+  ) {
+    gnm_sheet_view_cursor_set($!gsv, $edit, $base_col, $base_row, $move_col, $move_row, $bound);
   }
 
-  method auto_expr_recalc {
-    wb_view_auto_expr_recalc($!wv);
+  method detach_control (
+    SheetControl $sc
+  ) {
+    gnm_sheet_view_detach_control($!gsv, $sc);
   }
 
-  method cur_sheet ( :$raw = False ) {
-    propReturnObject(
-      wb_view_cur_sheet($!wv),
-      $raw,
-      |Gnumeric::Spreadsheet::Sheet.getTypePair
-    );
+  method dispose {
+    gnm_sheet_view_dispose($!gsv);
   }
 
-  method cur_sheet_view ( :$raw = False ) {
-    propReturnObject(
-      wb_view_cur_sheet_view($!wv),
-      $raw,
-      |Gnumeric::Spreadsheet::Sheet::View.getTypePair
-    );
+  method editpos_in_filter {
+    gnm_sheet_view_editpos_in_filter($!gsv);
   }
 
-  method detach_control {
-    wb_view_detach_control($!wv);
+  method editpos_in_slicer {
+    gnm_sheet_view_editpos_in_slicer($!gsv);
   }
 
-  method detach_from_workbook {
-    wb_view_detach_from_workbook($!wv);
+  method flag_selection_change {
+    gnm_sheet_view_flag_selection_change($!gsv);
   }
 
-  method edit_line_set (WorkbookControl() $wbc) {
-    wb_view_edit_line_set($!wv, $wbc);
+  method flag_status_update_pos (
+    GnmCellPos $pos
+  ) {
+    gnm_sheet_view_flag_status_update_pos($!gsv, $pos);
   }
 
-  method get_doc ( :$raw = False ) {
-    propReturnObject(
-      wb_view_get_doc($!wv),
-      $raw,
-      |GOffice::Doc.getTypePair
-    );
+  method flag_status_update_range (
+    GnmRange  $range
+  ) {
+    gnm_sheet_view_flag_status_update_range($!gsv, $range);
   }
 
-  method get_index_in_wb {
-    wb_view_get_index_in_wb($!wv);
+  method flag_style_update_range (
+    GnmRange  $range
+  ) {
+    gnm_sheet_view_flag_style_update_range($!gsv, $range);
   }
 
-  method get_workbook {
-    wb_view_get_workbook($!wv);
-  }
-
-  method is_protected (Int() $check_sheet) {
-    my gboolean $c = $check_sheet;
-
-    wb_view_is_protected($!wv, $c);
-  }
-
-  method menus_update {
-    wb_view_menus_update($!wv);
-  }
-
-  method preferred_size (Int() $w_pixels, Int() $h_pixels) {
-    my gint ($w, $h) = ($w_pixels, $h_pixels);
-
-    wb_view_preferred_size($!wv, $w_pixels, $h_pixels);
+  method freeze_panes (
+    GnmCellPos $frozen_top_left,
+    GnmCellPos $unfrozen_top_left
+  ) {
+    gnm_sheet_view_freeze_panes($!gsv, $frozen_top_left, $unfrozen_top_left);
   }
 
   method get_type {
     state ($n, $t);
 
-    unstable_get_type( self.^name, &workbook_view_get_type, $n, $t );
+    unstable_get_type( self.^name, &gnm_sheet_view_get_type, $n, $t );
   }
 
-  method selection_desc (Int() $use_pos, WorkbookControl() $wbc) {
-    my gboolean $u = $use_pos.so.Int;
-
-    wb_view_selection_desc($!wv, $u, $wbc);
+  method is_frozen {
+    gnm_sheet_view_is_frozen($!gsv);
   }
 
-  method set_attribute (Str() $name, Str() $value) {
-    wb_view_set_attribute($!wv, $name, $value);
-  }
-
-  method sheet_add (Sheet() $new_sheet) {
-    wb_view_sheet_add($!wv, $new_sheet);
-  }
-
-  method sheet_focus (Sheet() $sheet) {
-    wb_view_sheet_focus($!wv, $sheet);
-  }
-
-  method style_feedback {
-    wb_view_style_feedback($!wv);
-  }
-
-  method save (GOCmdContext() $cc) {
-    workbook_view_save($!wv, $cc);
-  }
-
-  method save_as (
-    GOFileSaver()  $fs,
-    Str()          $uri,
-    GOCmdContext() $cc
+  method make_cell_visible (
+    gint      $col,
+    gint      $row,
+    gboolean  $couple_panes
   ) {
-    workbook_view_save_as($!wv, $fs, $uri, $cc);
+    gnm_sheet_view_make_cell_visible($!gsv, $col, $row, $couple_panes);
   }
 
-  method save_to_output (
-    GOFileSaver()  $fs,
-    GsfOutput()    $output,
-    GOIOContext()  $io_context
+  method new (Sheet() $sheet, WorkbookView() $wbv) {
+    gnm_sheet_view_new($sheet, $wbv);
+  }
+
+  method panes_insdel_colrow (
+    gboolean  $is_cols,
+    gboolean  $is_insert,
+    gint      $start,
+    gint      $count
   ) {
-    workbook_view_save_to_output($!wv, $fs, $output, $io_context);
+    gnm_sheet_view_panes_insdel_colrow($!gsv, $is_cols, $is_insert, $start, $count);
   }
 
-  method save_to_uri (
-    GOFileSaver()  $fs,
-    Str()          $uri,
-    GOIOContext()  $io_context
+  method redraw_headers (
+    gboolean  $col,
+    gboolean  $row,
+    GnmRange  $r
   ) {
-    workbook_view_save_to_uri($!wv, $fs, $uri, $io_context);
+    gnm_sheet_view_redraw_headers($!gsv, $col, $row, $r);
   }
 
+  method redraw_range (
+    GnmRange  $r
+  ) {
+    gnm_sheet_view_redraw_range($!gsv, $r);
+  }
+
+  method resize (
+    gboolean  $force_scroll
+  ) {
+    gnm_sheet_view_resize($!gsv, $force_scroll);
+  }
+
+  method selection_copy (
+    WorkbookControl $wbc
+  ) {
+    gnm_sheet_view_selection_copy($!gsv, $wbc);
+  }
+
+  method selection_cut (
+    WorkbookControl $wbc
+  ) {
+    gnm_sheet_view_selection_cut($!gsv, $wbc);
+  }
+
+  method selection_extends_filter (
+    GnmFilter $f
+  ) {
+    gnm_sheet_view_selection_extends_filter($!gsv, $f);
+  }
+
+  method selection_intersects_filter_rows {
+    gnm_sheet_view_selection_intersects_filter_rows($!gsv);
+  }
+
+  method set_edit_pos (
+    GnmCellPos $pos
+  ) {
+    gnm_sheet_view_set_edit_pos($!gsv, $pos);
+  }
+
+  method set_initial_top_left (
+    gint      $col,
+    gint      $row
+  ) {
+    gnm_sheet_view_set_initial_top_left($!gsv, $col, $row);
+  }
+
+  method sv_sheet {
+    sv_sheet($!gsv);
+  }
+
+  method sv_wbv {
+    sv_wbv($!gsv);
+  }
+
+  method unant {
+    gnm_sheet_view_unant($!gsv);
+  }
+
+  method update {
+    gnm_sheet_view_update($!gsv);
+  }
+
+  method weak_ref (
+    SheetView         $sv,
+    CArray[SheetView] $ptr
+  ) {
+    gnm_sheet_view_weak_ref($!gsv, $ptr);
+  }
+
+  method weak_unref (CArray[SheetView] $ptr) is static {
+    gnm_sheet_view_weak_unref($ptr);
+  }
 }

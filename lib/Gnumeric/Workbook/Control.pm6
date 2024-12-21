@@ -44,7 +44,7 @@ class Gnumeric::Workbook::Control {
     self!setObject($to-parent);
   }
 
-  method Gnumeric::Spreadsheet::Raw::Structs::WorkbookControl
+  method Gnumeric::Raw::Structs::WorkbookControl
     is also<WorkbookControl>
   { $!gwc }
 

@@ -39,7 +39,7 @@ class Gnumeric::Range {
     self!setObject($to-parent);
   }
 
-  method Gnumeric::Spreadsheet::Raw::Definitions::GnmRange
+  method Gnumeric::Raw::Definitions::GnmRange
     is also<GnmRange>
   { $!gr }
 

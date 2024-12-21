@@ -2,10 +2,16 @@ use v6.c;
 
 use NativeCall;
 
+use Cairo;
 use GLib::Raw::Definitions;
-use Gnumeric::Spreadsheet::Raw::Definitions;
+use GLib::Raw::Structs;
+use Pango::Raw::Definitions;
+use GTK::Raw::Definitions;
+use Gnumeric::Raw::Definitions;
+use Gnumeric::Raw::Enums;
+use Gnumeric::Raw::Structs;
 
-unit package Gnumeric::Spreadsheet::Raw::Object;
+unit package Gnumeric::Raw::Object;
 
 ### /usr/src/gnumeric/src/sheet-object.h
 

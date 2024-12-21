@@ -1,14 +1,16 @@
 use v6.c;
 
-use Gnumeric::Spreadsheet::Raw::Types;
-use Gnumeric::Spreadsheet::Sheet::Object;
+use NativeCall;
+
+use Gnumeric::Raw::Types;
+use Gnumeric::Raw::Sheet::Object;
 
 use GTK::TargetList:ver<3.0.1146>;
 
 use GLib::Roles::Implementor;
 use GLib::Roles::Object;
 
-class Gnumeric::Spreadsheet::Sheet::Object {
+class Gnumeric::Sheet::Object {
   also does GLib::Roles::Object;
 
   has SheetObject $!so is implementor;
@@ -17,10 +19,6 @@ class Gnumeric::Spreadsheet::Sheet::Object {
     my gint $p = $positions;
 
     sheet_object_adjust_stacking($!so, $p);
-  }
-
-  method anchor_dup {
-    sheet_object_anchor_dup($!so);
   }
 
   proto method build_menu (|)
@@ -80,7 +78,7 @@ class Gnumeric::Spreadsheet::Sheet::Object {
   }
 
   method draw_cairo (cairo_t() $cr, Int() $rtl) {
-    my gboolean $r = $rtll.so.Int;
+    my gboolean $r = $rtl.so.Int;
 
     sheet_object_draw_cairo($!so, $cr, $r);
   }
@@ -122,7 +120,7 @@ class Gnumeric::Spreadsheet::Sheet::Object {
     propReturnObject(
       sheet_object_get_anchor($!so),
       $raw,
-      |Gnumeric::Spreadsheet::Sheet::Object::Anchor.getTypePair
+      |Gnumeric::Sheet::Object::Anchor.getTypePair
     );
   }
 
@@ -146,7 +144,7 @@ class Gnumeric::Spreadsheet::Sheet::Object {
     propReturnObject(
       sheet_object_get_sheet($!so),
       $raw,
-      |Gnumeric::Spreadsheet::Sheet.getTypePair
+      |Gnumeric::Sheet.getTypePair
     );
   }
 
@@ -174,7 +172,7 @@ class Gnumeric::Spreadsheet::Sheet::Object {
 
   # cw: Move to ::Enums!
   method gnm_anchor_mode_get_type {
-    state ($n, $t)
+    state ($n, $t);
 
     unstable_get_type(
       self.^name,
@@ -218,15 +216,16 @@ class Gnumeric::Spreadsheet::Sheet::Object {
   }
 
   method move_undo (
-    GSList() $objects,
-    Int()    $objects_created
+    GSList()  $objects,
+    Int()     $objects_created,
+             :$raw              = False
   )
     is static
   {
     my gboolean $o = $objects_created.so.Int;
 
     propReturnObject(
-      sheet_object_move_undo($!so, $o),
+      sheet_object_move_undo($objects, $o),
       $raw,
       |GOffice::Undo.getTypePair
     );
@@ -234,7 +233,7 @@ class Gnumeric::Spreadsheet::Sheet::Object {
 
   method new_view (SheetObjectViewContainer() $container, :$raw = False) {
     propReturnObject(
-      sheet_object_new_view($!so, $so, $container),
+      sheet_object_new_view($!so, $container),
       $raw,
       |Sheet::Object::View.getTypePair
     )
@@ -252,7 +251,7 @@ class Gnumeric::Spreadsheet::Sheet::Object {
   }
   multi method position_pts_get (CArray[gdouble] $coords) {
     sheet_object_position_pts_get($!so, $coords);
-    CArrayToArray($c, size => 4);
+    CArrayToArray($coords, size => 4);
   }
 
   proto method pts_to_anchor (|)
@@ -283,7 +282,7 @@ class Gnumeric::Spreadsheet::Sheet::Object {
     Str()                   $url,
     CArray[Pointer[GError]] $err         = gerror
   ) {
-    my gdouble r = $resolution;
+    my gdouble $r = $resolution;
 
     clear_error;
     sheet_object_save_as_image($!so, $format, $r, $url, $err);
@@ -338,7 +337,7 @@ class Gnumeric::Spreadsheet::Sheet::Object {
     GnmConventions()          $convs,
     CArray[Pointer[GError]]   $err     = gerror
   ) {
-    samewith($format, $output, $err, $consv);
+    samewith($format, $output, $err, $convs);
   }
   multi method write_object (
     Str()                     $format,
@@ -353,7 +352,7 @@ class Gnumeric::Spreadsheet::Sheet::Object {
 
 }
 
-class Gnumeric::Spreadsheet::Sheet::Objects {
+class Gnumeric::Sheet::Objects {
   also does GLib::Roles::StaticClass;
 
   method clear (
@@ -364,7 +363,7 @@ class Gnumeric::Spreadsheet::Sheet::Objects {
   ) {
     my GType $t = $type;
 
-    sheet_objects_clear($!so, $r, $t, $pundo);
+    sheet_objects_clear($sheet, $r, $t, $pundo);
   }
 
   method dup (
@@ -374,7 +373,7 @@ class Gnumeric::Spreadsheet::Sheet::Objects {
   )
     is static
   {
-    sheet_objects_dup($!so, $dst, $range);
+    sheet_objects_dup($src, $dst, $range);
   }
 
   method get (
@@ -382,11 +381,11 @@ class Gnumeric::Spreadsheet::Sheet::Objects {
     GnmRange $r,
     GType    $t
   ) {
-    sheet_objects_get($!so, $r, $t);
+    sheet_objects_get($sheet, $r, $t);
   }
 
   method init {
-    sheet_objects_init($!so);
+    sheet_objects_init;
   }
 
   method relocate (
@@ -394,22 +393,26 @@ class Gnumeric::Spreadsheet::Sheet::Objects {
     gboolean            $update,
     CArray[GOUndo]      $pundo
   ) {
-    sheet_objects_relocate($!so, $update, $pundo);
+    sheet_objects_relocate($rinfo, $update, $pundo);
   }
 
   method shutdown {
-    sheet_objects_shutdown($!so);
+    sheet_objects_shutdown;
   }
 }
 
-method anchor_get_type {
-  sheet_object_anchor_get_type();
-}
-
-class Gnumeric::Spreadsheet::Sheet::Object::Anchor {
+class Gnumeric::Sheet::Object::Anchor {
   also does GLib::Roles::Object;
 
   has SheetObjectAnchor $!soa is implementor;
+
+  method dup ( :$raw = False ) {
+    propReturnObject(
+      sheet_object_anchor_dup($!soa),
+      $raw,
+      |self.getTypePair
+    );
+  }
 
   multi method init (GnmRange() $r, Int() $direction, Int() $mode) {
     samewith($r, $, $direction, $mode);
@@ -424,34 +427,40 @@ class Gnumeric::Spreadsheet::Sheet::Object::Anchor {
     my GODrawingAnchorDir $d = $direction;
     my GnmSOAnchorMode    $m = $mode;
 
-    sheet_object_anchor_init($!so, $r, $o, $d, $m)_;
+    sheet_object_anchor_init($!soa, $r, $o, $d, $m);
     CArrayToArray($offsets = $o);
   }
 
   proto method to_offset_pts (|)
   { * }
 
-  multi method to_offset_pts {Sheet() $sheet) {
+  multi method to_offset_pts (Sheet() $sheet) {
     samewith($sheet, $);
   }
   multi method to_offset_pts (Sheet() $sheet, $res_pts is rw) {
     my gdouble $r = newCArray(gdouble);
 
-    sheet_object_anchor_to_offset_pts($!so, $sheet, $r);
+    sheet_object_anchor_to_offset_pts($!soa, $sheet, $r);
     CArrayToArray($res_pts = $r);
   }
 
-  proto method anchor_to_pts (|)
+  proto method to_pts (|)
   { * }
 
-  multi method anchor_to_pts (Sheet() $sheet) {
+  multi method to_pts (Sheet() $sheet) {
     samewith($);
   }
-  multi method anchor_to_pts (Sheet() $sheet, $res_pts is rw) {
+  multi method to_pts (Sheet() $sheet, $res_pts is rw) {
     my gdouble $r = newCArray(gdouble);
 
-    sheet_object_anchor_to_pts($!so, $sheet, $res_pts);
+    sheet_object_anchor_to_pts($!soa, $sheet, $res_pts);
     CArrayToArray($res_pts = $r);
+  }
+
+  method get_type {
+    state ($n, $t);
+
+    unstable_get_type( self.^name, &sheet_object_anchor_get_type, $n, $t );
   }
 
 }

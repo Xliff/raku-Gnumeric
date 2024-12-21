@@ -1,7 +1,7 @@
-use v6.v;
+use v6.c;
 
 use Gnumeric::Raw::Types;
-use Gnumeric::Raw:::Sheet::Control;
+use Gnumeric::Raw::Sheet::Control;
 
 use GLib::Roles::Implementor;
 use GLib::Roles::Object;
@@ -35,7 +35,7 @@ class Gnumeric::Sheet::Control {
     self!setObject($to-parent);
   }
 
-  method Gnumeric::Spreadsheet::Raw::Definitions::SheetControl
+  method Gnumeric::Raw::Definitions::SheetControl
     is also<SheetControl>
   { $!sc }
 
@@ -109,7 +109,7 @@ class Gnumeric::Sheet::Control {
   {
     my gboolean ($c, $r) = ($col, $row).map( *.so.Int );
 
-    sc_redraw_headers($!sc, $c, $r, $r);
+    sc_redraw_headers($!sc, $c, $r, $rr);
   }
 
   method redraw_range (GnmRange() $r) is also<redraw-range> {

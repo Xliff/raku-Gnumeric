@@ -3,7 +3,12 @@ use v6.c;
 use NativeCall;
 
 use GLib::Raw::Definitions;
+use GDK::Raw::Structs;
 use Gnumeric::Raw::Definitions;
+use GTK::Raw::Definitions;
+use GTK::Raw::Structs;
+use Gnumeric::Raw::Enums;
+use Gnumeric::Raw::Structs;
 
 unit package Gnumeric::Sreadsheet::Sheet::Control::GUI;
 

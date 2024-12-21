@@ -3,7 +3,8 @@ use v6.c;
 use NativeCall;
 
 use GLib::Raw::Definitions;
-use Gnumeric::Spreadsheet::Raw::Definitions;
+use Gnumeric::Raw::Definitions;
+use Gnumeric::Raw::Structs;
 
 unit package Gnumeric::Raw::Sheet::Control;
 

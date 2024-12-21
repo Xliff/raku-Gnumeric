@@ -36,7 +36,7 @@ class Gnumeric::Workbook::Control::GTK {
     self!setObject($to-parent);
   }
 
-  method Gnumeric::Spreadsheet::Raw::Definitions::WBCGtk
+  method Gnumeric::Raw::Definitions::WBCGtk
   { $!gwcg }
 
   proto method new (|)

@@ -5,7 +5,7 @@ use Method::Also;
 use Gnumeric::Raw::Types;
 use Gnumeric::Raw::Sheet::Control::GUI;
 
-use Sheet::Control;
+use Gnumeric::Sheet::Control;
 
 use GLib::Roles::Implementor;
 
@@ -36,7 +36,7 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
     self.setSheetControl($to-parent);
   }
 
-  method Gnumeric::Spreadsheet::Raw::Definitions::SheetControlGUI
+  method Gnumeric::Raw::Definitions::SheetControlGUI
     is also<SheetControlGUI>
   { $!scg }
 
