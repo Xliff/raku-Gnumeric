@@ -701,6 +701,176 @@ class GnmCellRendererExprEntry_ is repr<CStruct> is export {
 	has GnmExprEntry        $!entry ;
 }
 
+class GtkGTAfont is repr<CStruct> {
+	GtkToggleAction $.bold;
+	GtkToggleAction $.italic;
+	GtkToggleAction $.underline;
+	GtkToggleAction $.d-underline,
+	GtkToggleAction $.sl-underline;
+	GtkToggleAction $.dl-underline;
+	GtkToggleAction $.superscript
+	GtkToggleAction $.subscript;
+	GtkToggleAction $.strikethrough;
+}
+
+class GtkGTAlcra is repr<CStruct> {
+	has GtkToggleAction $.left;
+	has GtkToggleAction $.center;
+	has GtkToggleAction $.right;
+	has GtkToggleAction $.center_across_selection;
+}
+
+class GtkGTAtcb is repr<CStruct> {
+	has GtkToggleAction $.top;
+	has GtkToggleAction $.center;
+	has GtkToggleAction $.bottom;
+}
+
+class GTKGAi is repr<CStruct> {
+  has GtkActionGroup $.actions;
+  has guint          $.merge_id;
+}
+
+class GnmEditLine is repr<CStruct> {
+	has GnmExprEntry  $.entry;                   # The real edit line
+	has GnmExprEntry  $.temp_entry;              # A tmp overlay eg from a guru
+	has GtkWidget     $.guru;
+	has gulong        $.signal_changed,
+	has gulong        $.signal_insert,
+	has gulong        $.signal_delete;
+	has gulong        $.signal_cursor_pos;
+	has gulong        $.signal_selection_bound;
+	has PangoAttrList $.cell_attrs;              # Attrs from cell format.
+	has PangoAttrList $.markup;                  # just the markup
+	has PangoAttrList $.full_content;            # cell_attrs+markup
+	has PangoAttrList $.cur_fmt;                 # attrs for new text (depends on position)
+}
+
+class WBCGtk is repr<CStruct> is export {
+  HAS WorkbookControl      $.base;
+
+  has GtkWidget            $.toplevel;
+  has GtkBuilder           $.gui;
+
+  # The area that contains the sheet and the sheet tabs.
+  has GtkWidget            $.notebook_area;
+
+  # The notebook that contains the sheets (GTK)
+  has GtkNotebook          $.snotebook;
+
+  # The notebook that contains the sheet tabs. (Gnm)
+  has GnmNotebook          $.bnotebook;
+
+  # The GtkPaned that contains the sheet tabs and the status area
+  has GtkPaned             $.tabs_paned;
+
+  has GtkWidget            $.progress_bar;
+  HAS GnmEditLine          $.edit_line;
+
+  # While editing these should be visible
+  has GtkWidget            $.ok_button;
+	has GtkWidget            $.cancel_button;
+
+  # While not editing these should be visible
+  has GtkWidget            $.func_button;
+
+  has gboolean             $.updating_ui;
+  has gboolean             $.inside_editing;
+
+  # Auto completion
+  has GnmComplete          $.auto_complete;
+  has gboolean             $.auto_completing;
+  has Str                  $.auto_complete_text;
+
+  has int                  $.auto_max_size;
+
+  has gboolean             $.last_key_was_end;
+  has SheetControlGUI      $.rangesel;
+  has GtkWidget            $.table;
+  has GtkWidget            $.auto_expr_label;
+  has GtkWidget            $.status_text;
+
+  # Widgets whose visibility should be copied.
+  has GHashTable           $.visibility_widgets;
+
+  has gboolean             $.is_fullscreen;
+  has GOUndo               $.undo_for_fullscreen;
+  has GSList               $.hide_for_fullscreen;
+
+  # Edit area (a GtkEntry)
+  has GtkWidget            $.selection_descriptor
+
+  # Autosave
+  has gboolean             $.autosave_prompt;
+  has gint                 $autosave_time;
+  has guint                $autosave_timer;
+
+  has PangoFontDescription $.font_desc;
+  has SheetControlGUI      $.active_scg;
+  has gulong               $.sig_view_changed;
+  has gulong               $.sig_auto_expr_text;
+	has gulong               $.sig_auto_expr_attrs;
+  has gulong               $.sig_show_horizontal_scrollbar;
+	has gulong               $.sig_show_vertical_scrollbar;
+  has gulong               $.sig_show_notebook_tabs;
+  has gulong               $.sig_sheet_order;
+	has gulong               $.sig_notify_uri;
+	has gulong               $.sig_notify_dirty;
+  has gpointer             $.sig_wbv;
+  has GtkWidget            $.status_area;
+  has GtkUIManager         $.ui;
+  has GtkActionGroup       $.permanent_actions,
+	has GtkActionGroup       $.actions,
+	has GtkActionGroup       $.font_actions,
+  has GtkActionGroup       $.data_only_actions,
+	has GtkActionGroup       $.semi_permanent_actions;
+  HAS GTKGAi               $.file_history;
+	HAS GTKGAi               $.toolbar;
+	HAS GTKGAi               $.windows;
+	HAS GTKGAi               $.templates;
+  has guint                $.template_loader_handler;
+  has GOActionComboStack   $.undo-haction;
+	has GOActionComboStack   $.redo-haction;
+  has GtkAction            $.undo_vaction;
+	has GtkAction            $.redo_vaction;
+  has GOActionComboColor   $.fore_color;
+	has GOActionComboColor   $.back_color;
+  has GtkAction            $.font_name_haction;
+	has GtkAction            $.font_name_vaction;
+  has GOActionComboText    $.zoom_haction;
+  has GtkAction            $.zoom_vaction;
+  has GOActionComboPixmaps $.borders;
+  has GOActionComboPixmaps $.halignment;
+  has GOActionComboPixmaps $.valignment;
+
+  HAS GtkGTAfont  $.font;
+	HAS GtkGTAlcra  $.h-align
+  HAS GtkGTAtcb   $.v-align
+  has GtkWidget   $.menu_zone;
+	has GtkWidget   $.toolbar-zone1;
+	has GtkWidget   $.toolbar-zone2;
+	has GtkWidget   $.toolbar-zone3;
+	has GtkWidget   $.toolbar-zone4;
+  has GHashTable  $.custom-uis;
+  has guint       $.idle-update-style-feedback;
+  has GnmCell     $.editing-cell;
+  has Sheet       $.editing-sheet;
+  has gboolean    $.editing;
+  has SheetObject $.new-object;
+  has Str         $.preferred-geometry;
+
+	method toolbar-zones {
+		[
+			$!toolbar_zone1,
+			$!toolbar_zone2,
+			$!toolbar_zone3,
+			$!toolbar_zone4,
+	  ]
+  }
+
+}
+
+
 # class analysis_tools_data_advanced_filter_t is repr<CStruct> is export {
 # 	has analysis_tools_data_generic_b_t $!base            ;
 # 	has gboolean                        $!unique_only_flag;
