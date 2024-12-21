@@ -22,7 +22,6 @@ class GnmExpr             is repr<CPointer> does GLib::Roles::Pointers is export
 class GnmExprEntry        is repr<CPointer> does GLib::Roles::Pointers is export { }
 class GnmExprRelocateInfo is repr<CPointer> does GLib::Roles::Pointers is export { }
 class GnmStyle            is repr<CPointer> does GLib::Roles::Pointers is export { }
-class WBCGtk              is repr<CPointer> does GLib::Roles::Pointers is export { }
 
 # cw: These structs are a part of the public API, but its big. Definitions will
 #     be forthcoming.
@@ -35,6 +34,7 @@ class GnmEvalPos               is repr<CPointer> does GLib::Roles::Pointers is e
 class GnmExprSharer            is repr<CPointer> does GLib::Roles::Pointers is export { }
 class GnmInputMsg              is repr<CPointer> does GLib::Roles::Pointers is export { }
 class GnmNamedExpr             is repr<CPointer> does GLib::Roles::Pointers is export { }
+class GnmNotebook              is repr<CPointer> does GLib::Roles::Pointers is export { }
 class GnmPane                  is repr<CPointer> does GLib::Roles::Pointers is export { }
 class GnmScenario              is repr<CPointer> does GLib::Roles::Pointers is export { }
 class GnmSheetSlicer           is repr<CPointer> does GLib::Roles::Pointers is export { }
