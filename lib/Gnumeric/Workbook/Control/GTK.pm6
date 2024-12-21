@@ -3,6 +3,8 @@ use v6.c;
 use Gnumeric::Raw::Types;
 use Gnumeric::Raw::Workbook::Control::GTK;
 
+use GTK::Widget;
+
 use GLib::Roles::Implementor;
 use GLib::Roles::Object;
 
@@ -56,14 +58,15 @@ class Gnumeric::Workbook::Control::GTK {
   multi method new (
     :view(:optional-view(:$optional_view))             = WorkbookView,
     :wb(:optional-wb(:$optional_wb))                   = Workbook,
-    :screen(:optional-screen(:$optional_screen))       = GdkScreen, 
+    :screen(:optional-screen(:$optional_screen))       = GdkScreen,
     :geometry(:optional-geometry(:$optional_geometry)) = Str
   ) {
+
     samewith(
-      :$optional_view,
-      :$optional_wb,
-      :$optional_screen,
-      :$optional_geometry
+      $optional_view,
+      $optional_wb,
+      $optional_screen,
+      $optional_geometry
     );
   }
   multi method new (
@@ -127,8 +130,13 @@ class Gnumeric::Workbook::Control::GTK {
     wbc_gtk_detach_guru($!gwcg);
   }
 
-  method get_guru {
-    wbc_gtk_get_guru($!gwcg);
+  # cw: Please port to returnWidget!
+  method get_guru ( :$raw = False ) {
+    propReturnObject(
+      wbc_gtk_get_guru($!gwcg),
+      $raw,
+      |GTK::Widget.getTypePair
+    );
   }
 
   method get_type {
@@ -197,18 +205,18 @@ class Gnumeric::Workbook::Control::GTK {
   }
 
   proto method find_for_workbook (|)
-  { *}
+  { * }
 
-  method find_for_workbook (
+  multi method find_for_workbook (
      $wb,
     :$candidate     = WBCGtk,
     :$pref_screen   = GdkScreen,
     :$pref_display  = GdkDisplay,
     :$raw           = False
   ) {
-    samewith($wb, $candidete, $pref_screen, $pref_display, :$raw);
-  }s
-  method find_for_workbook (
+    samewith($wb, $candidate, $pref_screen, $pref_display, :$raw);
+  }
+  multi method find_for_workbook (
     Workbook()    $wb,
     WBCGtk()      $candidate,
     GdkScreen()   $pref_screen,
@@ -272,7 +280,7 @@ class Gnumeric::Workbook::Control::GTK {
     wbcg_get_n_scg($!gwcg);
   }
 
-  method get_nth_scg (Int() $i) {
+  method get_nth_scg (Int() $i, :$raw = False) {
     my gint $ii = $i;
 
     return Nil unless $i ~~ 0 .. $.get_n_scg;
@@ -285,6 +293,8 @@ class Gnumeric::Workbook::Control::GTK {
   }
 
   method AT-POS (\k) {
+    $.get_nth_scg(k);
+  }
 
   method insert_object (SheetObject() $so) {
     wbcg_insert_object($!gwcg, $so);
