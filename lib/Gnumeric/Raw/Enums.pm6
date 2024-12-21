@@ -1,3 +1,11 @@
+use v6.c;
+
+use NativeCall;
+
+use GLib::Raw::Definitions;
+
+unit package Gnumeric::Raw::Enums;
+
 constant AnalysisToolEngineT is export := guint32;
 our enum AnalysisToolEngineTEnum is export <
   TOOL_ENGINE_UPDATE_DAO
@@ -22,19 +30,30 @@ our enum AnalysisToolsErrorCodeTEnum is export <
   analysis_tools_invalid_field
 >;
 
+our constant CellIterFlags is export := guint32;
+our enum CellIterFlagsEnum is export (
+  CELL_ITER_ALL                   => 0,
+  CELL_ITER_IGNORE_NONEXISTENT    => 1,
+  CELL_ITER_IGNORE_EMPTY          => 1 +< 1,
+  CELL_ITER_IGNORE_BLANK          => 1 +| (1 +< 1), #= (CELL_ITER_IGNORE_NONEXISTENT | CELL_ITER_IGNORE_EMPTY),
+  CELL_ITER_IGNORE_HIDDEN         => 1 +< 2,
+  CELL_ITER_IGNORE_SUBTOTAL       => 1 +< 3,
+  CELL_ITER_IGNORE_FILTERED       => 1 +< 4
+);
+
 constant ChartFreqT is export := guint32;
 our enum ChartFreqTEnum is export <
-  NO_CHART
-  BAR_CHART
-  COLUMN_CHART
+  CHART_FREQ_NO_CHART
+  CHART_FREQ_BAR_CHART
+  CHART_FREQ_COLUMN_CHART
 >;
 
 constant ChartT is export := guint32;
 our enum ChartTEnum is export <
-  NO_CHART
-  HISTOGRAM_CHART
-  BAR_CHART
-  COLUMN_CHART
+  CHART_NO_CHART
+  CHART_HISTOGRAM_CHART
+  CHART_BAR_CHART
+  CHART_COLUMN_CHART
 >;
 
 constant CmdObjectRaiseSelector is export := guint32;
@@ -942,15 +961,15 @@ our enum StfDialogPageEnum is export <
   DPG_FORMAT
 >;
 
-constant StfparsetypeT is export := guint32;
-our enum StfparsetypeTEnum is export <
+constant StfParseType_t is export := guint32;
+our enum StfParseType_tEnum is export <
   PARSE_TYPE_NOTSET
   PARSE_TYPE_CSV
   PARSE_TYPE_FIXED
 >;
 
-constant StftrimtypeT is export := guint32;
-our enum StftrimtypeTEnum is export <
+constant StfTrimType_t is export := guint32;
+our enum StfTrimType_tEnum is export <
   TRIM_TYPE_NEVER
   TRIM_TYPE_LEFT
   TRIM_TYPE_RIGHT
@@ -1014,11 +1033,10 @@ our enum WBCEditResultEnum is export <
   WBC_EDIT_ACCEPT_ARRAY
 >;
 
-constant WbControlNavigatorT is export := guint32;
-our enum WbControlNavigatorTEnum is export <
+constant wb_control_navigator_t is export := guint32;
+our enum wb_control_navigator_tEnum is export <
   navigator_top
   navigator_bottom
   navigator_last
   navigator_first
 >;
-
