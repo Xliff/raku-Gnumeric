@@ -10,7 +10,7 @@ use Gnumeric::Raw::Compat;
 
 use GLib::Roles::Object;
 
-constant gnumeric         is export = 'spreadsheet-1.12';
+constant gnumeric         is export = 'spreadsheet-1.12.57';
 constant gnumeric-support is export = %?RESOURCES<lib/linux/gnumeric-support.so>;
 
 constant gnm_float        is export := num64;
