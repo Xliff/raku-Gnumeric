@@ -31,13 +31,13 @@ class Gnumeric::Workbook::View {
     $!wv = do {
       when WorkbookView {
         $to-parent = cast(GObject, $_);
-        $_;
+        $_
       }
 
       default {
         $to-parent = $_;
         cast(WorkbookView, $_);
-      });
+      }
     }
     self!setObject($to-parent);
   }
@@ -60,9 +60,8 @@ class Gnumeric::Workbook::View {
     $o.ref if $ref;
     $o;
   }
-
-  method new {
-    my $gnumeric-wb-view = workbook_view_new();
+  multi method new (Workbook() $wb) {
+    my $gnumeric-wb-view = workbook_view_new($wb);
 
     $gnumeric-wb-view ?? self.bless( :$gnumeric-wb-view ) !! Nil;
   }
@@ -127,8 +126,11 @@ class Gnumeric::Workbook::View {
     );
   }
 
-  method detach_control is also<detach-control> {
-    wb_view_detach_control($!wv);
+  method detach_control (WorkbookControl() $wbc)
+    is also<detach-control>
+    is static
+  {
+    wb_view_detach_control($wbc);
   }
 
   method detach_from_workbook is also<detach-from-workbook> {
