@@ -1,7 +1,7 @@
 prefix=Gnumeric
 struct-prefix=Gnm
 modules=Gnumeric::Spreadsheet:::Raw::Types
-backups=backup,bitbucket,google-backup,azure-backup,hut
+backups=backup,bitbucket,google,azure-backup,sourcehut
 hfile-prefix=
 lib=gnumeric
 include-directory=/usr/src/gnumeric/src

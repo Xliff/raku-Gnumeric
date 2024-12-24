@@ -6,7 +6,7 @@
     "version": "r0.0.1",
     "meta-version": "0",
     "source-url": "https://github.com/Xliff/raku-Gnumeric",
-                                                "provides": {
+                                                    "provides": {
       "Gnumeric::Raw::Compat"                 :  "lib/Gnumeric/Raw/Compat.pm6"               ,
       "Gnumeric::Raw::Definitions"            :  "lib/Gnumeric/Raw/Definitions.pm6"          ,
       "Gnumeric::Raw::Enums"                  :  "lib/Gnumeric/Raw/Enums.pm6"                ,
