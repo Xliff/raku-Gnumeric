@@ -13,9 +13,11 @@ class Gnumeric::Sheet::View {
 
   has SheetView $!gsv is implementor;
 
-  method ant (
-    GList     $ranges
-  ) {
+  method new (Sheet() $sheet, WorkbookView() $wbv) {
+    gnm_sheet_view_new($sheet, $wbv);
+  }
+
+  method ant (GList() $ranges) {
     gnm_sheet_view_ant($!gsv, $ranges);
   }
 
@@ -99,10 +101,6 @@ class Gnumeric::Sheet::View {
     gboolean  $couple_panes
   ) {
     gnm_sheet_view_make_cell_visible($!gsv, $col, $row, $couple_panes);
-  }
-
-  method new (Sheet() $sheet, WorkbookView() $wbv) {
-    gnm_sheet_view_new($sheet, $wbv);
   }
 
   method panes_insdel_colrow (
