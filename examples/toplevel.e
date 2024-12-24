@@ -18,8 +18,8 @@ use Gnumeric::Main;
 
 my $app = GTK::Application.new(
   title  => 'org.genex.workbook.control.gui',
-  width  => 1024,
-  height => 768
+  width  => 1280,
+  height => 1024
 );
 
 my @l = ('A' ... 'E');
@@ -30,17 +30,13 @@ $app.activate.tap: SUB {
   }
 
   my $w    = Gnumeric::Workbook.new;
-
-  say "W: { $w // '»NOW«' }";
-
   my $wv   = Gnumeric::Workbook::View.new($w);
   my $s    = Gnumeric::Sheet.new($w, 'Test Sheet');
-
-  say "S: { $s // '»NOS«' }";
-
   my $sv   = Gnumeric::Sheet::View.new($s, $wv);
   my $wbcg = Gnumeric::Workbook::Control::GTK.new(view => $wv, wb => $w);
   my $scg  = Gnumeric::Sheet::Control::GUI.new($sv, $wbcg);
+
+  $w.sheet.attach($s);
 
   $wbcg.toplevel.show-all;
 
