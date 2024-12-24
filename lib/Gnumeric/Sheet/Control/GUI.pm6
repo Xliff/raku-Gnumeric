@@ -43,6 +43,9 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
 
   has $!rs;
 
+  proto method new (|)
+  { * }
+
   multi method new (
     $gnumeric-sheet-gui where * ~~ SheetControlGUIAncestry,
 
@@ -54,10 +57,10 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
     $o.ref if $ref;
     $o;
   }
-  multi method new (WBCGtk() $wbcg) {
-    my $sheet-control-gui = sheet_control_gui_new($!scg, $wbcg);
+  multi method new (SheetView() $sv, WBCGtk() $wbcg) {
+    my $gnumeric-sheet-gui = sheet_control_gui_new($sv, $wbcg);
 
-    $sheet-control-gui ?? self.bless( :$sheet-control-gui ) !! Nil
+    $gnumeric-sheet-gui ?? self.bless( :$gnumeric-sheet-gui ) !! Nil
   }
 
   method colrow_distance_get (Int() $is_cols, Int() $from, Int() $to)
