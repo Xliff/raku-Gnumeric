@@ -843,8 +843,8 @@ class Gnumeric::Sheet {
   multi method new (
     Workbook() $wb,
     Str()      $name,
-    Int()      $columns = 255,
-    Int()      $rows    = 255
+    Int()      $columns = 256,
+    Int()      $rows    = 256
   ) {
     my gint ($c, $r) = ($columns, $rows);
 
