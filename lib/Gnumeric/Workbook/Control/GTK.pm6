@@ -4,6 +4,7 @@ use Gnumeric::Raw::Types;
 use Gnumeric::Raw::Workbook::Control::GTK;
 
 use GTK::Widget;
+use GTK::Window;
 
 use GLib::Roles::Implementor;
 use GLib::Roles::Object;
@@ -38,7 +39,7 @@ class Gnumeric::Workbook::Control::GTK {
     self!setObject($to-parent);
   }
 
-  method Gnumeric::Raw::Definitions::WBCGtk
+  method Gnumeric::Raw::Structs::WBCGtk
   { $!gwcg }
 
   proto method new (|)
