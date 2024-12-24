@@ -122,9 +122,8 @@ class Gnumeric::Workbook::Sheet::State {
 
   has WorkbookSheetState $!wss is implementor;
 
-  submethod BUILD ( :$gnumeric-worksheet ) {
-    self.setWorkbookSheetState($gnumeric-worksheet)
-      if $gnumeric-worksheet
+  submethod BUILD ( :$gnumeric-sheet-state ) {
+    self.setWorkbookSheetState($gnumeric-sheet-state) if $gnumeric-sheet-state
   }
 
   has Workbook $!w is built;
@@ -224,9 +223,8 @@ class Gnumeric::Workbook {
 
   has Workbook $!w  is implementor;
 
-  submethod BUILD ( :$gnumeric-worksheet ) {
-    self.setWorkbook($gnumeric-worksheet)
-      if $gnumeric-worksheet
+  submethod BUILD ( :$gnumeric-workbook ) {
+    self.setWorkbook($gnumeric-workbook) if $gnumeric-workbook
   }
 
   method setWorkbook (WorkbookAncestry $_) {
@@ -247,17 +245,20 @@ class Gnumeric::Workbook {
   }
 
   method Sheet::Raw::Definitions::Workbook
-    is also<Workbook>
+    is also<
+      Workbook
+      GnmWorkbook
+    >
   { $!w }
 
   multi method new (
-    $gnumeric-worksheet where * ~~ WorkbookAncestry,
+    $gnumeric-workbook where * ~~ WorkbookAncestry,
 
     :$ref = True
   ) {
-    return unless $gnumeric-worksheet;
+    return unless $gnumeric-workbook;
 
-    my $o = self.bless( :$gnumeric-worksheet );
+    my $o = self.bless( :$gnumeric-workbook );
     $o.ref if $ref;
     $o;
   }
