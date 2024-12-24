@@ -427,6 +427,11 @@ class GnmParsePos is repr<CStruct> is export {
 	has Workbook   $!wb   ;
 }
 
+class GnmColRowIter is repr<CStruct> is export {
+	has gint       $.pos;
+	has ColRowInfo $.cri;
+}
+
 class GnmCellIter is repr<CStruct> is export {
 	has GnmCell     $.cell;
 	HAS GnmParsePos $.pp;
