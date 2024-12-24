@@ -6,9 +6,9 @@ use Gnumeric::Raw::Types;
 use Gnumeric::Raw::Notebook;
 
 use GTK::Widget;
+use GTK::Label;
 
 use GLib::Roles::Implementor;
-
 
 our subset GnmNotebookAncestry is export of Mu
   where GnmNotebook | GtkWidgetAncestry;
@@ -35,9 +35,12 @@ class Gnumeric::Notebook is GTK::Widget {
       }
     }
     self.setGtkWidget($to-parent);
+    if self.style_context -> $sc {
+      $sc.add_class('buttons');
+    }
   }
 
-  method Gnumeric::Spreadsheet::Raw::Definitions::GnmNotebook
+  method Gnumeric::Raw::Definitions::GnmNotebook
     is also<GnmNotebook>
   { $!gn }
 
@@ -53,7 +56,10 @@ class Gnumeric::Notebook is GTK::Widget {
     $o;
   }
   multi method new {
-    my $gnumeric-notebook = self.new-object-ptr( self.get_type );
+    my $gnumeric-notebook = cast(
+      GnmNotebook,
+      self.new-object-ptr( self.get_type )
+    );
 
     $gnumeric-notebook ?? self.bless( :$gnumeric-notebook ) !! Nil;
   }
@@ -75,11 +81,18 @@ class Gnumeric::Notebook is GTK::Widget {
   method get_type is also<get-type> {
     state ($n, $t);
 
-    unstable_get_type( self.^name, &gnm_notebook_get_type, $n, $t );s
+    unstable_get_type( self.^name, &gnm_notebook_get_type, $n, $t );
   }
 
-  method insert_tab (GtkWidget() $label, Int() $pos) is also<insert-tab> {
-    my gint $p = $p;
+  proto method insert_tab (|)
+    is also<insert-tab>
+  { * }
+
+  multi method insert_tab (Str() $label, :$pos = $.get_n_visible) {
+    samewith( GTK::Label.new($label), $pos )
+  }
+  multi method insert_tab (GtkWidget() $label, Int() $pos) {
+    my gint $p = $pos;
 
     gnm_notebook_insert_tab($!gn, $label, $p);
   }
