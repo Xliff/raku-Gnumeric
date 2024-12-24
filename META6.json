@@ -1,0 +1,59 @@
+{
+    "depends": [
+	    "p6-GtkPlus"
+    ],
+    "description": "Perl6 library bindings for GNOME's Gnumeric Spreadsheet",
+    "version": "r0.0.1",
+    "meta-version": "0",
+    "source-url": "https://github.com/Xliff/raku-Gnumeric",
+                                                "provides": {
+      "Gnumeric::Raw::Compat"                 :  "lib/Gnumeric/Raw/Compat.pm6"               ,
+      "Gnumeric::Raw::Definitions"            :  "lib/Gnumeric/Raw/Definitions.pm6"          ,
+      "Gnumeric::Raw::Enums"                  :  "lib/Gnumeric/Raw/Enums.pm6"                ,
+      "Gnumeric::Raw::Structs"                :  "lib/Gnumeric/Raw/Structs.pm6"              ,
+      "Gnumeric::Raw::Exports"                :  "lib/Gnumeric/Raw/Exports.pm6"              ,
+      "Gnumeric::Raw::Types"                  :  "lib/Gnumeric/Raw/Types.pm6"                ,
+      "Gnumeric::Raw::Value"                  :  "lib/Gnumeric/Raw/Value.pm6"                ,
+      "Gnumeric::Raw::Workbook"               :  "lib/Gnumeric/Raw/Workbook.pm6"             ,
+      "Gnumeric::Raw::Workbook::Control"      :  "lib/Gnumeric/Raw/Workbook/Control.pm6"     ,
+      "Gnumeric::Raw::Workbook::Control::GTK" :  "lib/Gnumeric/Raw/Workbook/Control/GTK.pm6" ,
+      "Gnumeric::Raw::Workbook::View"         :  "lib/Gnumeric/Raw/Workbook/View.pm6"        ,
+      "Gnumeric::Sheet::Range"                :  "lib/Gnumeric/Sheet/Range.pm6"              ,
+      "Gnumeric::Value"                       :  "lib/Gnumeric/Value.pm6"                    ,
+      "Gnumeric::Workbook"                    :  "lib/Gnumeric/Workbook.pm6"                 ,
+      "Gnumeric::Workbook::Control::GTK"      :  "lib/Gnumeric/Workbook/Control/GTK.pm6"     ,
+      "Gnumeric::Raw::FontButton"             :  "lib/Gnumeric/Raw/FontButton.pm6"           ,
+      "Gnumeric::Raw::Notebook"               :  "lib/Gnumeric/Raw/Notebook.pm6"             ,
+      "Gnumeric::Raw::Range"                  :  "lib/Gnumeric/Raw/Range.pm6"                ,
+      "Gnumeric::Raw::Sheet"                  :  "lib/Gnumeric/Raw/Sheet.pm6"                ,
+      "Gnumeric::Raw::Sheet::Control"         :  "lib/Gnumeric/Raw/Sheet/Control.pm6"        ,
+      "Gnumeric::Raw::Sheet::Control::GUI"    :  "lib/Gnumeric/Raw/Sheet/Control/GUI.pm6"    ,
+      "Gnumeric::Raw::Sheet::Object"          :  "lib/Gnumeric/Raw/Sheet/Object.pm6"         ,
+      "Gnumeric::Raw::Sheet::View"            :  "lib/Gnumeric/Raw/Sheet/View.pm6"           ,
+      "Gnumeric::Sheet"                       :  "lib/Gnumeric/Sheet.pm6"                    ,
+      "Gnumeric::Sheet::Control"              :  "lib/Gnumeric/Sheet/Control.pm6"            ,
+      "Gnumeric::Sheet::Control::GUI"         :  "lib/Gnumeric/Sheet/Control/GUI.pm6"        ,
+      "Gnumeric::Sheet::Object"               :  "lib/Gnumeric/Sheet/Object.pm6"             ,
+      "Gnumeric::Sheet::View"                 :  "lib/Gnumeric/Sheet/View.pm6"               ,
+      "Gnumeric::Workbook::Control"           :  "lib/Gnumeric/Workbook/Control.pm6"         ,
+      "Gnumeric::Workbook::View"              :  "lib/Gnumeric/Workbook/View.pm6"            ,
+      "Gnumeric::FontButton"                  :  "lib/Gnumeric/FontButton.pm6"               ,
+      "Gnumeric::Notebook"                    :  "lib/Gnumeric/Notebook.pm6"                 ,
+      "Gnumeric::Range"                       :  "lib/Gnumeric/Range.pm6"                    
+    },
+    "resources": [
+      "lib/linux/gnumeric-support.so"
+    ],
+    "name": "Gnumeric",
+    "perl": "6.c",
+    "test-depends": [ "Test::META" ],
+    "build-depends": [
+      "Text::Table::Simple",
+      "Dependency::Sort",
+      "Color",
+      "RandomColor",
+      "File::Find"
+    ],
+    "support": { "source": null },
+    "authors": [ "clifton.wood@gmail.com" ]
+}
