@@ -341,12 +341,12 @@ sub sheet_colrow_fetch (
 { * }
 
 sub sheet_colrow_foreach (
-  Sheet         $sheet,
-  gboolean      $is_cols,
-  gint          $first,
-  gint          $last,
-  gpointer $callback, #= ColRowHandler
-  gpointer      $user_data
+  Sheet     $sheet,
+  gboolean  $is_cols,
+  gint      $first,
+  gint      $last,
+            &callback (GnmColRowIter, gpointer --> gboolean), #= ColRowHandler
+  gpointer  $user_data
 )
   returns uint32
   is      native(gnumeric)
@@ -661,7 +661,7 @@ sub gnm_sheet_resize (
   gint         $cols,
   gint         $rows,
   GOCmdContext $cc,
-  gboolean     $perr
+  gboolean     $perr   is rw
 )
   returns GOUndo
   is      native(gnumeric)
