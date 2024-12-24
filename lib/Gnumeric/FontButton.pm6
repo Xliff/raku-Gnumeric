@@ -5,14 +5,14 @@ use Method::Also;
 use Gnumeric::Raw::Types;
 use Gnumeric::Raw::FontButton;
 
-use GTK::Button;
+use GTK::FontButton;
 
 use GLib::Roles::Implementor;
 
 our subset GnmFontButtonAncestry is export of Mu
   where GnmFontButton | GtkFontButtonAncestry;
 
-class Gnumeric::FontButton is GTK::Button {
+class Gnumeric::FontButton is GTK::FontButton {
   has GnmFontButton $!gfb is implementor;
 
   submethod BUILD ( :$gnumeric-font-button ) {
