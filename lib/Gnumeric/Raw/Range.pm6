@@ -255,11 +255,11 @@ sub range_transpose (
   is      export
 { * }
 
-sub range_union (GnmRange $a, GnmRange $b)
-  returns GnmRange
-  is      native(gnumeric)
-  is      export
-{ * }
+# sub range_union_ptr (GnmRange $a, GnmRange $b)
+#   returns GnmRange
+#   is      native(gnumeric-support)
+#   is      export
+# { * }
 
 sub range_width (GnmRange $r)
   returns gint

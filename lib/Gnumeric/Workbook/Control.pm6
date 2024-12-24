@@ -61,9 +61,10 @@ class Gnumeric::Workbook::Control {
   }
 
   method new_wrapper (
-    WorkbookView() $wbv,
-    Workbook()     $wb,
-    gpointer       $extra = gpointer
+    WorkbookView()  $wbv,
+    Workbook()      $wb,
+    gpointer        $extra = gpointer,
+                   :$raw  = False
   )
     is also<new-wrapper>
   {
@@ -86,7 +87,7 @@ class Gnumeric::Workbook::Control {
     );
   }
 
-  method cur_sheet_view is also<cur-sheet-view> {
+  method cur_sheet_view ( :$raw = False ) is also<cur-sheet-view> {
     propReturnObject(
       wb_control_cur_sheet_view($!gwc),
       $raw,

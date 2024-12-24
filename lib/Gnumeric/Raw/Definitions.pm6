@@ -10,11 +10,16 @@ use Gnumeric::Raw::Compat;
 
 use GLib::Roles::Object;
 
-constant gnumeric is export = 'spreadsheet';
+constant gnumeric         is export = 'spreadsheet-1.12';
+constant gnumeric-support is export = %?RESOURCES<lib/linux/gnumeric-support.so>;
 
 constant gnm_float        is export := num64;
 constant ColRowIndexList  is export := GList;
 constant ColRowStateGroup is export := GSList;
+
+sub gnumeric-distribution-resources is export {
+  %?RESOURCES.Map;
+}
 
 class GOFormat            is repr<CPointer> does GLib::Roles::Pointers is export { }
 class ColRowState         is repr<CPointer> does GLib::Roles::Pointers is export { }

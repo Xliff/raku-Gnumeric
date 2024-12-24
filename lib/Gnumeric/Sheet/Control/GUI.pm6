@@ -1,6 +1,7 @@
 use v6.c;
 
 use Method::Also;
+use NativeCall;
 
 use Gnumeric::Raw::Types;
 use Gnumeric::Raw::Sheet::Control::GUI;
@@ -63,7 +64,7 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
     is also<colrow-distance-get>
   {
     my gboolean  $i      =  $is_cols.so.Int;
-    my gint     ($f, $t) = ($from, $$to)
+    my gint     ($f, $t) = ($from, $to);
 
     scg_colrow_distance_get($!scg, $i, $f, $t);
   }
@@ -71,10 +72,10 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
   method colrow_select (Int() $is_cols, Int() $index, Int() $modifiers)
     is also<colrow-select>
   {
-    my gboolean  $i      =  $is_cols.so.Int;
-    my gint     ($i, $m) = ($index, $modifiers)
+    my gboolean  $c      =  $is_cols.so.Int;
+    my gint     ($i, $m) = ($index, $modifiers);
 
-    scg_colrow_select($!scg, $i, $i, $m);
+    scg_colrow_select($!scg, $c, $i, $m);
   }
 
   method colrow_size_set (
@@ -84,10 +85,10 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
   )
     is also<colrow-size-set>
   {
-    my gboolean  $i      = $is_cols.so.Int;
-    my gint     ($i, $n) = ($index, $new_size_pixels)
+    my gboolean  $c      = $is_cols.so.Int;
+    my gint     ($i, $n) = ($index, $new_size_pixels);
 
-    scg_colrow_size_set($!scg, $i, $i, $n);
+    scg_colrow_size_set($!scg, $c, $i, $n);
   }
 
   method comment_display (GnmComment() $cc, Int() $x, Int() $y)
@@ -111,34 +112,48 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
   }
 
   method context_menu (GdkEvent() $event, Int() $is_col, Int() $is_row)
-    is also<context-menu> {
+    is also<context-menu>
+  {
     my gboolean ($c, $r) = ($is_col, $is_row).map( *.so.Int );
 
     scg_context_menu($!scg, $event, $c, $r);
   }
 
-  method cursor_extend (Int() $n, Int() $jump_to_bound, Int() $horiz)
-    is also<cursor-extend>
-  {
-    my gint      $nn     = $n;
-    my gboolean ($j, $h) = ($jump_to_bound, $horiz).map( *.so.Int );
+  has $!scg-cursor;
 
-    scg_cursor_extend($!scg, $nn, $j, $h);
-  }
+  method cursor {
+    unless $!scg-cursor {
+      my \T = class :: {
+        has $!scg is built;
 
-  method cursor_move (Int() $dir, Int() $jump_to_bound, Int() $horiz)
-    is also<cursor-move>
-  {
-    my gint      $d       =  $dir;
-    my gboolean ($j, $h)  = ($jump_to_bound, $horiz)
+        method extend (Int() $n, Int() $jump_to_bound, Int() $horiz)
+          is also<cursor-extend>
+        {
+          my gint      $nn     = $n;
+          my gboolean ($j, $h) = ($jump_to_bound, $horiz).map( *.so.Int );
 
-    scg_cursor_move($!scg, $dir, $jump_to_bound, $horiz);
-  }
+          scg_cursor_extend($!scg, $nn, $j, $h);
+        }
 
-  method cursor_visible (Int() $is_visible) is also<cursor-visible> {
-    my gboolean $i = $is_visible.so.Int;
+        method move (Int() $dir, Int() $jump_to_bound, Int() $horiz)
+          is also<cursor-move>
+        {
+          my gint      $d       =  $dir;
+          my gboolean ($j, $h)  = ($jump_to_bound, $horiz);
 
-    scg_cursor_visible($!scg, $i);
+          scg_cursor_move($!scg, $dir, $jump_to_bound, $horiz);
+        }
+
+        method visible (Int() $is_visible) is also<cursor-visible> {
+          my gboolean $i = $is_visible.so.Int;
+
+          scg_cursor_visible($!scg, $i);
+        }
+      }
+
+      $!scg-cursor = T.new( scg => $!scg );
+    }
+    $!scg-cursor;
   }
 
   method delete_sheet_if_possible is also<delete-sheet-if-possible> {
@@ -247,7 +262,7 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
     $dy                                        is rw,
     $dx                                        is rw,
     :d(:drag(:drag-type(:$drag_type)))                = 0,
-    :p(:primary)                                      = SheetObject,
+    :p(:$primary)                                     = SheetObject,
     :s(:sym(:$symmetric))                             = True,
     :g(:grid(:snap-to-grid(:$snap_to_grid)))          = True,
     :m(:move(:is-mouse-move(:$is_mouse_move)))        = True
@@ -255,8 +270,8 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
     samewith(
       $gcanvas,
       $primary,
-      $dx
-      $dy
+      $dx,
+      $dy,
       $drag_type,
       $symmetric,
       $snap_to_grid,
@@ -306,7 +321,7 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
     Int()           $created_objects,
     CArray[GOUndo]  $pundo,
     CArray[GOUndo]  $predo,
-    CArray[Str]     *$undo_title
+    CArray[Str]     $undo_title,
                    :$raw              = False
   ) {
     my gint     $d = $drag_type;
@@ -350,7 +365,7 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
     Int()     $symmetric,
     Int()     $snap_to_grid
   ) {
-    my gint      $d          =  $drag_type
+    my gint      $d          =  $drag_type;
     my gdouble  ($ddx, $ddy) = ($dx, $dy);
     my gboolean ($s,   $g)   = ($symmetric, $snap_to_grid).map( *.so.Int );
 
@@ -358,7 +373,7 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
   }
 
   method pane (Int() $pane, :$raw = False) {
-    my gintc $p = $pane;
+    my gint $p = $pane;
 
     propReturnObject(
       scg_pane($!scg, $p),
@@ -381,8 +396,8 @@ class Gnumeric::Sheet::Control::GUI is Gnumeric::Sheet::Control {
   method queue_movement (&handler, Int() $n, Int() $jump, Int() $horiz)
     is also<queue-movement>
   {
-    my gint       $nn     =  $n;
-    my gbooleean ($j, $h) = ($jump, $horiz).map( *.so.Int );
+    my gint      $nn     =  $n;
+    my gboolean ($j, $h) = ($jump, $horiz).map( *.so.Int );
 
     scg_queue_movement($!scg, &handler, $nn, $j, $h);
   }

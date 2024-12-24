@@ -5,6 +5,7 @@ use NativeCall;
 use GLib::Raw::Definitions;
 use GTK::Raw::Definitions;
 use Gnumeric::Raw::Definitions;
+use Gnumeric::Raw::Structs;
 
 unit package Gnumeric::Raw::FontButton;
 

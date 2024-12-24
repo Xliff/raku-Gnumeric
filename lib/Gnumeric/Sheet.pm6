@@ -1,4 +1,4 @@
-/use v6.c;
+use v6.c;
 
 use NativeCall;
 use Method::Also;
@@ -13,16 +13,16 @@ class Gnumeric::Sheet::Cell {
   has $!gs is built;
 
   method create ( Int() $col, Int() $row) {
-    my gint ($c, $r) = ($columns, $rows);
+    my gint ($c, $r) = ($col, $row);
 
-    sheet_cell_create($!gs, $col, $row);
+    sheet_cell_create($!gs, $c, $r);
   }
 
   method fetch (Int() $col, Int() $row, :$raw = False) {
-    my gint ($c, $r) = ($columns, $rows);
+    my gint ($c, $r) = ($col, $row);
 
     propReturnObject(
-      sheet_cell_fetch($!gs, $col, $row),
+      sheet_cell_fetch($!gs, $c, $r),
       $raw,
       |Gnumeric::Cell.getTypePair
     );
@@ -33,20 +33,20 @@ class Gnumeric::Sheet::Cell {
   }
 
   method get (Int() $col, Int() $row, :$raw = False) {
-    my gint ($c, $r) = ($columns, $rows);
+    my gint ($c, $r) = ($col, $row);
 
     propReturnObject(
-      sheet_cell_get($!gs, $col, $row),
+      sheet_cell_get($!gs, $c, $r),
       $raw,
       |Gnumeric::Cell.getTypePair
     );
   }
 
   method get_value (Int() $col, Int() $row, :$raw = False) is also<get-value> {
-    my gint ($c, $r) = ($columns, $rows);
+    my gint ($c, $r) = ($col, $row);
 
     propReturnObject(
-      sheet_cell_get_value($!gs, $col, $row),
+      sheet_cell_get_value($!gs, $c, $r),
       $raw,
       |Gnumeric::Value.getTypePair
     );
@@ -56,7 +56,7 @@ class Gnumeric::Sheet::Cell {
     my gboolean $c = $comments.so.Int;
 
     propReturnObject(
-      sheet_cell_positions($!gs, $comments),
+      sheet_cell_positions($!gs, $c),
       $raw,
       |GLib::Pointer::Array.getTypePair
     )
@@ -66,19 +66,19 @@ class Gnumeric::Sheet::Cell {
     sheet_cell_queue_respan($c);
   }
 
-  method remove (
+  multi method remove (
     GnmCell()  $cell,
     Int()     :$redraw                               = True,
     Int()     :recalc(:queue-recalc(:$queue_recalc)) = True
   ) {
     samewith($cell, $redraw, $queue_recalc);
   }
-  method remove (
+  multi method remove (
     GnmCell() $cell,
     Int()     $redraw,
     Int()     $queue_recalc
   ) {
-    my gboolean ($r, $q) =* ($redraw, $queue_recalc).map( *.so.Int );
+    my gboolean ($r, $q) = ($redraw, $queue_recalc).map( *.so.Int );
 
     sheet_cell_remove($!gs, $cell, $r, $q);
   }
@@ -104,7 +104,7 @@ class Gnumeric::Sheet::Cell {
   method set_text_gi (Int() $col, Int() $row, Str() $str)
     is also<set-text-gi>
   {
-    my gint ($c, $r) = ($columns, $rows);
+    my gint ($c, $r) = ($col, $row);
 
     sheet_cell_set_text_gi($!gs, $col, $row, $str);
   }
@@ -162,7 +162,7 @@ class Gnumeric::Sheet::Col {
   }
 
   method get_info (Int() $col) is also<get-info> {
-    my gint $ = $col;
+    my gint $c = $col;
 
     sheet_col_get_info($!gs, $c);
   }
@@ -177,7 +177,7 @@ class Gnumeric::Sheet::Col {
   }
 
   method is_hidden (Int() $col) is also<is-hidden> {
-    my gint $ = $col;
+    my gint $c = $col;
 
     sheet_col_is_hidden($!gs, $c);
   }
@@ -247,10 +247,10 @@ class Gnumeric::Sheet::ColRow {
     is also<can-group>
   { * }
 
-  method can_group ($r, :c(:col(:$column)) = False) {
+  multi method can_group ($r, :c(:col(:$column)) = False) {
     samewith($r, $column);
   }
-  method can_group (GnmRange() $r, Int() $is_cols) {
+  multi method can_group (GnmRange() $r, Int() $is_cols) {
     my gboolean $i = $is_cols.so.Int;
 
     sheet_colrow_can_group($!gs, $r, $i);
@@ -263,8 +263,8 @@ class Gnumeric::Sheet::ColRow {
   multi method copy_info (
      $colrow,
      $cri,
-    :$raw              = False
-    :c(:col(:$column)) = False,
+    :$raw              = False,
+    :c(:col(:$column)) = False
   ) {
     samewith($colrow, $column, $cri);
   }
@@ -313,7 +313,7 @@ class Gnumeric::Sheet::ColRow {
              &callback,            #= ColRowHandler
     gpointer $user_data = gpointer
   ) {
-    my gint     ($f, $l) = ($first, $last)
+    my gint     ($f, $l) = ($first, $last);
     my gboolean  $i      = $is_cols.so.Int;
 
     sheet_colrow_foreach($!gs, $i, $f, $l, &callback, $user_data);
@@ -321,8 +321,8 @@ class Gnumeric::Sheet::ColRow {
 
   multi method get (
     Int()  $colrow,
-          :$raw              = False
-          :c(:col(:$column)) = False,
+          :$raw              = False,
+          :c(:col(:$column)) = False
   ) {
     samewith($colrow, $column, :$raw);
   }
@@ -341,10 +341,10 @@ class Gnumeric::Sheet::ColRow {
     is also<get-default>
   { * }
 
-  method get_default ( :c(:col(:$column)) = False, :$raw = False ) {
+  multi method get_default ( :c(:col(:$column)) = False, :$raw = False ) {
     samewith($column);
   }
-  method get_default (Int() $is_cols, :$raw = False) {
+  multi method get_default (Int() $is_cols, :$raw = False) {
     my gboolean $i = $is_cols.so.Int;
 
     propReturnObject(
@@ -358,12 +358,12 @@ class Gnumeric::Sheet::ColRow {
     is also<get-distance-pixels>
   { * }
 
-  method get_distance_pixels ($from, $to, :c(:col(:$column)) = False) {
+  multi method get_distance_pixels ($from, $to, :c(:col(:$column)) = False) {
     samewith($column, $from, $to);
   }
-  method get_distance_pixels (Int() $is_cols, Int() $from, Int() $to) {
+  multi method get_distance_pixels (Int() $is_cols, Int() $from, Int() $to) {
     my gboolean  $i      =  $is_cols.so.Int;
-    my gint     ($f, $t) = ($first, $to)
+    my gint     ($f, $t) = ($from, $to);
 
     sheet_colrow_get_distance_pixels($!gs, $is_cols, $from, $to);
   }
@@ -485,7 +485,7 @@ class Gnumeric::Sheet::Range {
     is also<contains-merges-or-arrays>
   { * }
 
-  method contains_merges_or_arrays (
+  multi method contains_merges_or_arrays (
     GnmRange()      $r,
     Str()           $cmd,
     GOCmdContext() :$cc                   = GOCmdContext,
@@ -493,19 +493,19 @@ class Gnumeric::Sheet::Range {
   ) {
     samewith($r, $cmd, $cc, $arrays.not, $arrays);
   }
-  method contains_merges_or_arrays (
+  multi method contains_merges_or_arrays (
     GnmRange()     $r,
     GOCmdContext() $cc,
     Str()          $cmd,
     Int()          $merges,
-    Int()          $amethod update_range (GnmRange() $range) {
-          sheet_flag_style_update_range($!gs, $range);
-        }rrays
+    Int()          $arrays
   ) {
     my gboolean ($m, $a) = ($merges, $arrays).map( *.so.Int);
 
     so sheet_range_contains_merges_or_arrays($!gs, $r, $cc, $cmd, $m, $a);
   }
+
+  has $!gs-flag;
 
   method flag {
     $!gs-flag = Gnumeric::Sheet::Flag.new( gs => $!gs ) unless $!gs-flag;
@@ -524,10 +524,14 @@ class Gnumeric::Sheet::Range {
     is static
     is also<set-expr-undo>
   {
-    sheet_range_set_expr_undo($sr, $texpr);
+    sheet_range_set_expr_undo($!gs, $texpr);
   }
 
-  method set_markup_undo (GnmSheetRange() $range, PangoAttrList() $markup)
+  method set_markup_undo (
+    GnmSheetRange()  $range,
+    PangoAttrList()  $markup,
+                    :$raw     = False
+  )
     is static
     is also<set-markup-undo>
   {
@@ -543,10 +547,10 @@ class Gnumeric::Sheet::Range {
     is static
     is also<set-text>
   {
-    sheet_range_set_text($p, $r, $str);
+    sheet_range_set_text($r, $str);
   }
 
-  method set_text_undo (Str() $text, :$raw = False)
+  method set_text_undo (GnmSheetRange() $sr, Str() $text, :$raw = False)
     is static
     is also<set-text-undo>
   {
@@ -599,10 +603,10 @@ class Gnumeric::Sheet::Range {
     sheet_range_splits_region($!gs, $r, $ignore, $cc, $cmd);
   }
 
-  method trim (GnmRange() $r, Int() $cols, Int() $rows) {
+  method trim (GnmRange() $rng, Int() $cols, Int() $rows) {
     my gboolean ($c, $r) = ($cols, $rows).map( *.so.Int );
 
-    sheet_range_trim($!gs, $r, $c, $r);
+    sheet_range_trim($!gs, $rng, $c, $r);
   }
 
   method unrender (GnmRange() $r) {
@@ -614,7 +618,7 @@ class Gnumeric::Sheet::Range {
   { * }
 
   multi method split_region (@ranges, $cc, $cmd) {
-    samewith( GLib:::GSList.new(@ranges, typed => GnmRange), $cc, $cmd );
+    samewith( GLib::GSList.new(@ranges, typed => GnmRange), $cc, $cmd );
   }
   multi method split_region (
     GSList()       $ranges,
@@ -636,7 +640,7 @@ class Gnumeric::Sheet::Row {
     :$raw   = False,
     :$all   = False
   ) {
-    $!rs.delete_rows($row, $cc, $count, :$pundo, :$raw, :$all);
+    $!gs.delete_rows($row, $cc, $count, :$pundo, :$raw, :$all);
   }
 
   method fetch (Int() $row, :$raw = False) {
@@ -836,15 +840,7 @@ class Gnumeric::Sheet {
     $o.ref if $ref;
     $o;
   }
-
-  has $!gs-cell;
-  has $!gs-col;
-  has $!gs-colrow;
-  has $!gs-range;
-  has $!gs-row;
-  has $!gs-scenario;
-
-  method new (
+  multi method new (
     Workbook() $wb,
     Str()      $name,
     Int()      $columns = 255,
@@ -873,6 +869,15 @@ class Gnumeric::Sheet {
 
     $gnumeric-sheet ?? self.bless( :$gnumeric-sheet ) !! Nil;
   }
+
+  has $!gs-cell;
+  has $!gs-col;
+  has $!gs-colrow;
+  has $!gs-range;
+  has $!gs-row;
+  has $!gs-scenario;
+
+
 
   method apply_border (GnmRange() $range, GnmBorder() $borders)
     is also<apply-border>
@@ -908,13 +913,11 @@ class Gnumeric::Sheet {
   }
 
   method cell {
-    $!gs-cell = Gnumeric::Sheet::Cell.new( gs => $!gs )
-      unless $!gs-cell
-
+    $!gs-cell = Gnumeric::Sheet::Cell.new( gs => $!gs ) unless $!gs-cell;
     $!gs-cell;
   }
 
-  method cells (GnmRange() $r) {
+  method cells (GnmRange() $r, :$raw = False) {
     propReturnObject(
       sheet_cells($!gs, $r),
       $raw,
@@ -975,7 +978,7 @@ class Gnumeric::Sheet {
     is also<delete-cols>
   { * }
 
-  method delete_cols (
+  multi method delete_cols (
      $col,
      $cc,
      $count = 1,
@@ -985,7 +988,7 @@ class Gnumeric::Sheet {
   ) {
     samewith($col, $count, $pundo, $cc, :$raw, :$all);
   }
-  method delete_cols (
+  multi method delete_cols (
     Int()           $col,
     Int()           $count,
     CArray[GOUndo]  $pundo,
@@ -1007,19 +1010,19 @@ class Gnumeric::Sheet {
     $all.not ?? $res !! ($res, $ru);
   }
 
-  proto method delete_cols (|)
-    is also<delete-cols>
+  proto method delete_rows (|)
+    is also<delete-rows>
   { * }
 
-  multi method delete_cols (
-     $rol,
+  multi method delete_rows (
+     $row,
      $cc,
      $count = 1,
     :$pundo = newCArray(GOUndo),
     :$raw   = False,
     :$all   = False
   ) {
-    samewith($col, $count, $pundo, $cc, :$raw, :$all);
+    samewith($row, $count, $pundo, $cc, :$raw, :$all);
   }
   multi method delete_rows (
     Int()           $row,
@@ -1028,9 +1031,7 @@ class Gnumeric::Sheet {
     GOCmdContext    $cc,
                    :$raw = False,
                    :$all = False
-  )
-    is also<delete-rows>
-  {
+  ) {
     my gint ($r, $n) = ($row, $count);
 
     my $res = sheet_delete_rows($!gs, $row, $count, $pundo, $cc);
@@ -1061,8 +1062,8 @@ class Gnumeric::Sheet {
      $col,
      $move_row,
      $base_row,
-    :jump-to-boundaries(:jump_to_boundaries(:$jump))) = False,
-    :$count                                           = $jump ?? 1 !! 0
+    :jump-to-boundaries(:jump_to_boundaries(:$jump)) = False,
+    :$count                                          = $jump ?? 1 !! 0
   ) {
     samewith($col, $move_row, $base_row, $count, $jump);
   }
@@ -1073,26 +1074,26 @@ class Gnumeric::Sheet {
     Int() $count,
     Int() $jump_to_boundaries
   ) {
-    my gint     ($c, $mr, $br, $c) = ($col, $move_row, $base_row, $count);
-    my gboolean  $j                =  $jump_to_boundaries.so.Int;
+    my gint     ($c, $mr, $br, $cnt) = ($col, $move_row, $base_row, $count);
+    my gboolean  $j                  =  $jump_to_boundaries.so.Int;
 
-    sheet_find_boundary_horizontal($!gs, $c, $mr, $br, $c, $j);
+    sheet_find_boundary_horizontal($!gs, $c, $mr, $br, $cnt, $j);
   }
 
   proto method find_boundary_vertical (|)
     is also<find-boundary-vertical>
   { * }
 
-  method find_boundary_vertical (
+  multi method find_boundary_vertical (
      $move_col,
      $row,
      $base_col,
-    :jump-to-boundaries(:jump_to_boundaries(:$jump))) = False,
-    :$count                                           = $jump ?? 1 !! 0
+    :jump-to-boundaries(:jump_to_boundaries(:$jump)) = False,
+    :$count                                          = $jump ?? 1 !! 0
   ) {
     samewith($move_col, $row, $base_col, $count, $jump);
   }
-  method find_boundary_vertical (
+  multi method find_boundary_vertical (
     Int() $move_col,
     Int() $row,
     Int() $base_col,
@@ -1112,7 +1113,7 @@ class Gnumeric::Sheet {
   multi method foreach_cell_in_range (
      $r,
      &callback,             #= CellIterFunc
-     $closure   = gpointer
+     $closure   = gpointer,
     :$flags     = 0
   ) {
     samewith($flags, $r, &callback, $closure);
@@ -1128,17 +1129,20 @@ class Gnumeric::Sheet {
     sheet_foreach_cell_in_range($!gs, $f, $r, &callback, $closure);
   }
 
-  method foreach_cell_in_region (
+
+  proto method foreach_cell_in_region (|)
+    is also<foreach-cell-in-region>
+  { * }
+
+  multi method foreach_cell_in_region (
      $start_col,
      $start_row,
      $end_col,
      $end_row,
      &callback,              #= CellIterFunc
-     $closure    = gpointer
+     $closure    = gpointer,
     :$flags      = 0
-  )
-    is also<foreach-cell-in-region>
-  {
+  ) {
     samewith(
       $flags,
       $start_col,
@@ -1149,7 +1153,7 @@ class Gnumeric::Sheet {
       $closure
     );
   }
-  method foreach_cell_in_region (
+  multi method foreach_cell_in_region (
     Int()    $flags,
     Int()    $start_col,
     Int()    $start_row,
@@ -1157,9 +1161,7 @@ class Gnumeric::Sheet {
     Int()    $end_row,
              &callback,              #= CellIterFunc
     gpointer $closure    = gpointer
-  )
-    is also<foreach-cell-in-region>
-  {
+  ) {
     my CellIterFlags $f = $flags;
 
     my gint ($sc, $sr, $ec, $er) =
@@ -1189,7 +1191,7 @@ class Gnumeric::Sheet {
     );
   }
 
-  method get_comment (GnmCellPos() $pos, :$raw = false) is also<get-comment> {
+  method get_comment (GnmCellPos() $pos, :$raw = False) is also<get-comment> {
     propReturnObject(
       sheet_get_comment($!gs, $pos),
       $raw,
@@ -1210,19 +1212,20 @@ class Gnumeric::Sheet {
   { * }
 
   multi method get_extent (
-    :spans(:merges(:$extend) = False,
-    :$hidden                 = False
+    :spans(:merges(:$extend)) = False,
+    :$hidden                  = False
   ) {
     samewith($extend, $hidden);
   }
   multi method get_extent (
-    Int() $spans_and_merges_extend,
-    Int() $include_hidden
+    Int()  $spans_and_merges_extend,
+    Int()  $include_hidden,
+          :$raw                       = False
   ) {
     my gboolean ($s, $i) =
       ($spans_and_merges_extend, $include_hidden).map( *.so.Int );
 
-    propReurnObject(
+    propReturnObject(
       sheet_get_extent($!gs, $s, $i),
       $raw,
       |Gnumeric::Range.getTypePair
@@ -1244,14 +1247,15 @@ class Gnumeric::Sheet {
   { * }
 
   multi method get_printarea (
-    :$styles    = False.
+    :$styles    = False,
     :$printarea = False
   ) {
     samewith($styles, $printarea.not);
   }
   multi method get_printarea (
-    Int() $include_styles,
-    Int() $ignore_printarea
+    Int()  $include_styles,
+    Int()  $ignore_printarea,
+          :$raw               = False
   ) {
     my gboolean ($s, $p) =
       ($include_styles, $ignore_printarea).map( *.so.Int );
@@ -1282,7 +1286,7 @@ class Gnumeric::Sheet {
   method foreach_name (&func, gpointer $data = gpointer)
     is also<foreach-name>
   {
-    gnm_sheet_foreach_name($!gs, $func, $data);
+    gnm_sheet_foreach_name($!gs, &func, $data);
   }
 
   method get_size ( :$raw = False ) is also<get-size> {
@@ -1403,9 +1407,9 @@ class Gnumeric::Sheet {
     CArray[GOUndo] $pundo,
     GOCmdContext() $cc
   ) {
-    my gint ($c, $cc) = ($cols, $count);
+    my gint ($c, $cnt) = ($col, $count);
 
-    so sheet_insert_cols($!gs, $col, $count, $pundo, $cc);
+    so sheet_insert_cols($!gs, $c, $cnt, $pundo, $cc);
   }
 
   proto method insert_rows (|)
@@ -1418,15 +1422,15 @@ class Gnumeric::Sheet {
     Int()          :$count = 1,
     CArray[GOUndo] :$pundo = newCArray(GOUndo)
   ) {
-    samewith(row, $count, $pundo, $cc);
+    samewith($row, $count, $pundo, $cc);
   }
-  method insert_rows (
+  multi method insert_rows (
     Int()          $row,
     Int()          $count,
     CArray[GOUndo] $pundo,
     GOCmdContext   $cc
   ) {
-    my gint ($r, $c) = ($rows, $count);
+    my gint ($r, $c) = ($row, $count);
 
     sheet_insert_rows($!gs, $r, $c, $pundo, $cc);
   }

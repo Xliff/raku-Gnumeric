@@ -5,10 +5,12 @@ use Method::Also;
 use Gnumeric::Raw::Types;
 use Gnumeric::Raw::Range;
 
+use GLib::GSList;
 use Gnumeric::Value;
 
 use GLib::Roles::Implementor;
 use GLib::Roles::Object;
+use GLib::Roles::StaticClass;
 
 our subset GnmRangeAncestry is export of Mu
   where GnmRange | GObject;
@@ -62,7 +64,7 @@ class Gnumeric::Range {
   method contains (Int() $c, Int() $r) {
     $r ~~ $!gr.start.row .. $!gr.end.row &&
     $c ~~ $!gr.start.col .. $!gr.end.col
-  )
+  }
 
   method dup {
     gnm_range_dup($!gr);
@@ -110,7 +112,7 @@ class Gnumeric::Range {
      $start_col,
      $start_row,
     :$rows       = 1,
-    :$cols       = 1
+    :$cols       = 1,
     :$raw        = False
   ) {
     my ($er, $ec) = ($start_col, $start_row) »+« ($rows, $cols);
@@ -120,14 +122,14 @@ class Gnumeric::Range {
     Int()  $start_col,
     Int()  $start_row,
     Int()  $end_col,
-    Int()  $end_row
+    Int()  $end_row,
           :$raw        = False
   ) {
     my gint ($sc, $sr, $ec, $er) =
       ($start_col, $start_row, $end_col, $end_row);
 
     propReturnObject(
-      range_init($sc, $sr, $ec, $er),
+      range_init($!gr, $sc, $sr, $ec, $er),
       $raw,
       |self.getTypePair
     );
@@ -146,7 +148,7 @@ class Gnumeric::Range {
   method init_cellpos_size (
     GnmCellPos()  $start,
     Int()         $cols,
-    Int()         $rows
+    Int()         $rows,
                  :$raw    = False
   )
     is also<init-cellpos-size>
@@ -208,12 +210,12 @@ class Gnumeric::Range {
   method init_rows (
     Sheet()  $sheet,
     Int()    $start_row,
-    Int()    $end_row
+    Int()    $end_row,
             :$raw        = False
   )
     is also<init-rows>
   {
-    my gint ($s, $e) = ($start_col, $end_col);
+    my gint ($s, $e) = ($start_row, $end_row);
 
     propReturnObject(
       range_init_rows($!gr, $sheet, $s, $e),
@@ -223,17 +225,17 @@ class Gnumeric::Range {
   }
 
   method init_value (GnmValue() $v, :$raw = False) is also<init-value> {
-    propReturnobject(
+    propReturnObject(
       range_init_value($!gr, $v),
       $raw,
       |self.getTypePair
     );
   }
 
-  method intersection (GnmRange() $b, :$raw = False) {
+  multi method intersection (GnmRange() $b, :$raw = False) {
     samewith( self.init(1, 1, :raw), $b, :$raw );
   }
-  method intersection (GnmRange() $r, GnmRange() $b, :$raw = False) {
+  multi method intersection (GnmRange() $r, GnmRange() $b, :$raw = False) {
     range_intersection($r, $!gr, $b);
     propReturnObject($r, $raw, |self.getTypePair);
   }
@@ -252,8 +254,16 @@ class Gnumeric::Range {
     range_is_singleton($!gr);
   }
 
-  method list_destroy is also<list-destroy> {
-    range_list_destroy($!gr);
+  proto method list_destroy (|)
+    is also<list-destroy>
+    is static
+  { * }
+
+  multi method list_destroy (@ranges) {
+    samewith( GLib::GSList(@ranges, typed => GnmRange) );
+  }
+  multi method list_destroy (GSList() $ranges) {
+    range_list_destroy($ranges);
   }
 
   method normalize {
@@ -287,9 +297,9 @@ class Gnumeric::Range {
     range_transpose($!gr, $sheet, $origin);
   }
 
-  method union (GnmRange() $b) {
-    range_union($!gr, $b);
-  }
+  # method union (GnmRange() $b) {
+  #   range_union_ptr($!gr, $b);
+  # }
 
   method width {
     range_width($!gr);
@@ -315,14 +325,14 @@ class Gnumeric::Range {
 }
 
 class Gnumeric::Range::Global {
-  also does GLib::Roles::StaticClasss;
+  also does GLib::Roles::StaticClass;
 
   method contained (
     Sheet()    $sheet,
     GnmValue() $a,
     GnmValue() $b
   ) {
-    global_range_contained($!gr, $a, $b);
+    global_range_contained($sheet, $a, $b);
   }
 
   method list_foreach (
@@ -335,19 +345,19 @@ class Gnumeric::Range::Global {
   {
     my CellIterFlags $f = $flags;
 
-    global_range_list_foreach($!gr, $ep, $f, &handler, $closure);
+    global_range_list_foreach($ep, $f, &handler, $closure);
   }
 
   method list_parse (
     Sheet()  $sheet,
     Str()    $str,
-            :glist(:$gslist) = False
+            :glist(:$gslist) = False,
             :$raw            = False
   )
     is also<list-parse>
   {
     returnGSList(
-      global_range_list_parse($!gr, $str),
+      global_range_list_parse($sheet, $str),
       $raw,
       $gslist,
       |Gnumeric::Value.getTypePair
@@ -355,6 +365,6 @@ class Gnumeric::Range::Global {
   }
 
   method name (Sheet() $sheet, GnmRange() $r) {
-    global_range_name($!gr, $r);
+    global_range_name($sheet, $r);
   }
 }
